@@ -40,6 +40,7 @@ int createChildren(struct TreeNode* node) {
 
 /*
   A full tree of N nodes, each level has at least 2 nodes so that the max. of depth/level is (N+1)/2
+  tree_nodes = N
   1. Build a complete binary tree with (N+1)/2 depth
      Each node is labeled from top-down and left-right, each node's index for a level :
         index = 2^(level-1) ~ 2^(level) - 1
@@ -48,12 +49,19 @@ int createChildren(struct TreeNode* node) {
      ...
      The nodes in the level-n are indexed in a range:  [ 2^(level-1) ...  2^(level) - 1 ]
   2. Visit the node level by level and recursively
-     (a) Go to a level and decide the max. number of node can be picked up: n. 
+     (a) Go to a level and decide the max. number of node can be picked up: level_nodes. 
          This accumulated number of node for levels can't exceed the total number assigned N. 
-     (b) Iteratively visit the nodes for this level with the number started from 1 to n.
-         while (n > 0 ){
-           visitLevel()
-           n--;
+         level_nodes = 2^(level-1)_level
+         if ( level_nodes > tree_nodes )
+           level_nodes = tree_nodes
+           tree_nodes = 0
+         else
+           tree_nodes -= level_nodes
+         
+     (b) Iteratively visit the nodes for this level with the number started from level_nodes to 1.
+         while ( level_nodes > 0 ){
+           visitLevel(level_nodes)
+           level_nodes -= 2;
          }
      (c) 
 */
