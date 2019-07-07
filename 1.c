@@ -9,7 +9,7 @@ int* twoSum(int* nums, int numsSize, int target, int* returnSize){
                 a = nums[a_i];
                 for (b_i=0; b_i<numsSize; b_i++) {
                         b = nums[b_i];
-                        if ( (a + b) == target ) {
+                        if ( (a_i!=b_i) && (a + b) == target ) {
                                 *result = a_i;
                                 *(result+1) = b_i;
                                 *returnSize = 2;
