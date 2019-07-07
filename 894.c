@@ -39,9 +39,13 @@ int createChildren(struct TreeNode* node) {
 }
 
 /*
-  a full tree of N node
-  * each level has at least 2 nodes so that the max. of depth is (N+1)/2
-  
+  A full tree of N nodes, each level has at least 2 nodes so that the max. of depth is (N+1)/2
+  1. Build a complete binary tree with (N+1)/2 depth
+     Each node is labeled from top-down and left-right .
+     The lable of the root node is 0.
+  2. Visit the node level by level and recursively
+     a. what is the max number of node this level can have: 2^0, 2^1, 2^2, ... 2^[(N+1)/2]
+     b. pick up nodes combinationally from 1 until the total number is achieved.
 */
 /**
  * Note: The returned array must be malloced, assume caller calls free().
