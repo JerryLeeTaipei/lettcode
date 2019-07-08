@@ -7,4 +7,6 @@ Exercises for problems in LettCode
 
 3(Medium). Longest Substring Without Repeating Characters (https://leetcode.com/problems/longest-substring-without-repeating-characters/)
 
+4(Hard). Median of Two Sorted Arrays (https://leetcode.com/problems/median-of-two-sorted-arrays/)
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
