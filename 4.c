@@ -9,9 +9,16 @@ the middle numbers are 21 and 23, the Median is 22.
 */
 
 double mergeSubBlocks(int *array, int* nums1, int nums1Size, int* nums2, int nums2Size){
-
-    // decompose until no overlapped or 1 element remained
-
+    int mid=0;
+    int *blk1_l=NULL, *blk1_r=NULL, *blk2_l=NULL, *blk2_r=NULL;
+    // if non-overlapped
+    if ( nums1[num1Size-1] < nums2[0] ) {
+        merge(nums1, nums1Size, nums2, nums2Size);
+    } else if ( nums2[num2Size-1] < nums1[0] ) {
+        merge(nums2, nums2Size, nums1, nums1Size);
+    } else { // decompose until no overlapped or 1 element remained
+        
+    }
 }
 
 double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Size){
