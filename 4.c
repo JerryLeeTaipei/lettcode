@@ -1,4 +1,5 @@
 
+
 /*
 The Median is the "middle" of a sorted list of numbers.
 To find the Median, place the numbers in value order and find the middle.
@@ -34,6 +35,7 @@ int  mergeSort( int *array, int offset, int *src1, int start_1, int end_1, int *
     int mid1=0, mid2=0, len=0;
     
     len = (end_1 - start_1 + 1) + (end_2 - start_2 + 1);
+    
     // if non-overlapped
     if ( src1[end_1] < src2[0] ) {
         merge(array, offset, src1, start_1, end_1, src2, start_2, end_2);
@@ -42,6 +44,7 @@ int  mergeSort( int *array, int offset, int *src1, int start_1, int end_1, int *
         merge(array, offset,  src2, 0, end_2, src1, 0, end_1);   
         return (offset + len);        
     }
+   
     // decompose until no overlapped or 1 element remained
     mid1 = (end_1 - start_1)/2;
     mid2 = (end_2 - start_2)/2;
@@ -50,6 +53,7 @@ int  mergeSort( int *array, int offset, int *src1, int start_1, int end_1, int *
     // compare the right block    
     offset = len;
     len = mergeSort(array, offset, src1, mid1+1, end_1, src2, mid2+1, end_2);
+  
     return (len+1);
 }
 
@@ -57,9 +61,9 @@ double  find_median(int *array, int len){
     double mid=0;
     
     if ( (len%2) == 1)
-        mid = array[(len/2) + 1];
+        mid = (double) array[(len/2) + 1];
     else
-        mid = ( array[(len/2)]  + array[(len/2)+1] )/ 2;
+        mid = ( ((double) array[(len/2)])  + ((double) array[(len/2)+1]) ) / 2;
     return mid;
 }
 
@@ -67,7 +71,9 @@ double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Si
     int *array=NULL, len=0;
     double median_value=0;  
     array = malloc ( (nums1Size + nums2Size) * sizeof(int) );
-    len = mergeSort(array, 0, nums1, 0, nums1Size-1, nums2, 0, nums2Size-1);
+//    len = mergeSort(array, 0, nums1, 0, nums1Size-1, nums2, 0, nums2Size-1);
+    len = 3; array[0] = 1; array[1] = 2; array[2] = 3;
     median_value = find_median(array, len);
+    free(array);
     return median_value;
 }
