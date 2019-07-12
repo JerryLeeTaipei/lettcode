@@ -47,12 +47,13 @@ void  mergeSort( int *array, int *offset, int *src1, int *start_1, int *end_1, i
     }
    
     // decompose for at least 2 elements
-    if ( (*end_1 - *start_1) > 0 )
+    if ( (*end_1 - *start_1) > 0 ) {
         *end_1 = (*end_1 - *start_1)/2;
-    if ( (*end_2 - *start_q) > 0 )
-        *end_2 = (*end_2 - *start_2)/2;
-    
-    // merge the left block
+    }
+    if ( (*end_2 - *start_q) > 0 ) {
+        *end_2 = (*end_2 - *start_2)/2;  
+    }
+    // merge the left block        
     mergeSort(array, offset, src1, start_1, end_1, src2, start_2, end_2);
     // merge the right block    
     mergeSort(array, offset, src1, mid1+1, end_1, src2, mid2+1, end_2);
