@@ -79,6 +79,11 @@ void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int
 	
 	(src1[mid]  < src2[mid2+1]) && (src2[mid2]  < src1[mid1+1])
 	
+	1. find the smaller 1st element from these 2 arrays to be the operated array
+	2. find the max. index of the operated array (using power of 2 increment) which can't be bigger than the 1st element of another array
+	3. use this index as the middle to divide the operated array
+	4. merge this left with another 1st element
+	5. use another array as the operated array, repeat 2~5
     	*/
     	if ( (end_1 - start_1) > 0 ) {
        	 	mid1 = (end_1 - start_1)/2;
