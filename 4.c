@@ -28,7 +28,7 @@ void insert(int *array, int *offset, int target, int *src, int start, int end) {
 }
 
 /*
-    The left block is smaller than the right one
+    The 1st block is smaller than the 2nd one
     Update: offset 
 */
 void merge(int *array, int *offset, int *src1, int start_1, int end_1, int *src2, int start_2, int end_2) {
@@ -46,23 +46,28 @@ void merge(int *array, int *offset, int *src1, int start_1, int end_1, int *src2
  
 
 /*
-    These 2 sorted arrays are non-overlapped
-    Each array is divided into 2 sub-blocks.
-    Compare and merge from the smaller(left) block, then, do the same for the bigger(right) block
+    	The 1st element of the 1st array is smaller than the 2nd array's.
+
+	Divide rule: find the mid1 and mid2 so that
+	
+	(src1[mid]  < src2[mid2+1]) && (src2[mid2]  < src1[mid1+1])
+	
+	1. find the max. index of the 1st array (using power of 2 increment) which can't be bigger than the 1st element in the 2nd array
+	3. use this index as the middle to divide the operated array
+	4. merge this left with the 1st element in the 2nd array
+	5. use the 2nd array as the operated array, repeat 2~5
+    	    
     Return the accumulated length of the merged blocks
 */
 
 void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int *src2, int start_2, int end_2){
-    int mid1=0, mid2=0, len=0;
-        printf("src1(%d:%d), src2(%d:%d)\n", start_1, end_1, start_2, end_2);
+    int inc_power=0, mid1=0, len=0;
+    printf("src1(%d:%d), src2(%d:%d)\n", start_1, end_1, start_2, end_2);
     // if non-overlapped
     if ( src1[end_1] <= src2[start_2] ) {
         merge(array, offset, src1, start_1, end_1, src2, start_2, end_2);
         return;
-    } else if ( src2[end_2] <= src1[start_1] ) {
-        merge(array, offset, src2, start_2, end_2, src1, start_1, end_1);   
-        return;
-    } 
+    }
    
     // decide which block to be merged when single element is seen
     if ( start_1 == end_1 ) { // insert the left in the right
@@ -72,36 +77,32 @@ void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int
 	printf("insertR->src2(%d), src1(%d:%d)\n", start_2, start_1, end_1);
 	insert(array, offset, src2[start_2], src1, start_1, end_1); 
     } else { 
-	mid1 = end_1;
-	mid2 = end_2;    
-    	/* decompose for at least 2 elements
-	Divide rule: find the mid1 and mid2 so that
-	
-	(src1[mid]  < src2[mid2+1]) && (src2[mid2]  < src1[mid1+1])
-	
-	1. find the smaller 1st element from these 2 arrays to be the operated array
-	2. find the max. index of the operated array (using power of 2 increment) which can't be bigger than the 1st element of another array
-	3. use this index as the middle to divide the operated array
-	4. merge this left with another 1st element
-	5. use another array as the operated array, repeat 2~5
-    	*/
-    	if ( (end_1 - start_1) > 0 ) {
-       	 	mid1 = (end_1 - start_1)/2;
-    	} 
-    	if ( (end_2 - start_2) > 0 ) {
-        	mid2 = (end_2 - start_2)/2;  
-    	}	    
-    	// merge the left block  
-	printf("mergeL->src1(%d:%d), src2(%d:%d)\n", start_1, mid1, start_2, mid2);      
-    	mergeSort(array, offset, src1, start_1, mid1, src2, start_2, mid2);
-    	// merge the right block   
-	printf("mergeR->src1(%d:%d), src2(%d:%d)\n", mid1+1, end_1, mid2+1, end_2);
-    	mergeSort(array, offset, src1, mid1+1, end_1, src2, mid2+1, end_2);
+	len = end_1 - start_1;
+	while ( src1[start_1+(1<<inc_power)] <= src2[start_2] ){
+	    inc_power++; // next power to be checked
+printf("%d > %d ?\n", (1<<inc_power), len);
+	    if ( (1<<inc_power) > len )
+		break;
+	}
+printf("inc_power=%d\n", inc_power);
+	if ( inc_power == 0)
+	    mid1 = start_1;
+	else {
+	    inc_power--; // this failed
+	    mid1 = start_1 +(1<<inc_power); 
+printf("mid1=%d\n", mid1);
+	}
+	    
+    	// merge the 1st block  
+	printf("mergeL->src1(%d:%d), src2(%d)\n", start_1, mid1, start_2);      
+    	mergeSort(array, offset, src1, start_1, mid1, src2, start_2, start_2);
+    	// swap then repeat for the remained block   
+	printf("mergeR->src2(%d:%d), src1(%d:%d)\n", start_2+1, end_2, mid1+1, end_1);
+    	mergeSort(array, offset, src2, start_2+1, end_2, src1, mid1+1, end_1);
     	// combine ?
 
     }
-    
-
+    return;
 }
 
 double  find_median(int *array, int len){
@@ -125,11 +126,16 @@ double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Si
         for (i=0; i<nums2Size; i++)
             printf("%d ", nums2[i]);
         printf("\n");    
-        array = malloc ( (nums1Size + nums2Size) * sizeof(int) + 1); // add one 0 at the end
+        array = malloc ( (nums1Size + nums2Size + 1) * sizeof(int) ); // add one 0 at the end
         end_1 = nums1Size - 1;
         end_2 = nums2Size - 1;
-        printf("findMedianSortedArrays:(%d:%d), (%d:%d)\n", start_1, end_1, start_2, end_2);
-        mergeSort(array, &offset, nums1, start_1, end_1, nums2, start_2, end_2); 
+	if ( nums1[start_1] <= nums2[start_2] ) {
+            printf("findMedianSortedArrays:(%d:%d), (%d:%d)\n", start_1, end_1, start_2, end_2);
+            mergeSort(array, &offset, nums1, start_1, end_1, nums2, start_2, end_2); 
+	} else {
+            printf("findMedianSortedArrays:(%d:%d), (%d:%d)\n", start_2, end_2, start_1, end_1);
+            mergeSort(array, &offset, nums2, start_2, end_2, nums1, start_1, end_1); 
+	}
         median_value = find_median(array, nums1Size + nums2Size); 
 	    len = nums1Size + nums2Size ;
 	    for ( i=0; i< len; i++)
@@ -158,17 +164,4 @@ int main(int argc, char **argv){
 	median = findMedianSortedArrays(num1, 2, num2, 1);
 	printf("%f\n", median);
 }
-/*
-1 3 
-    2 4 5 
-findMedianSortedArrays:(0:1), (0:2)
-src1(0:1), src2(0:2)
-mergeL->src1(0:0), src2(0:1) -> 1 vs 2,4
-src1(0:0), src2(0:1)
-merge():offset(3) --> 1, 2, 4
-mergeR->src1(1:1), src2(2:2) -> 3 vs 5
-src1(1:1), src2(2:2)
-merge():offset(5)
-1 2 4 3 5
 
-*/
