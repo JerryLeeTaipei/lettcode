@@ -1,3 +1,6 @@
+#include <stdio.h>
+#include <stdlib.h>
+
 /*
 The Median is the "middle" of a sorted list of numbers.
 To find the Median, place the numbers in value order and find the middle.
@@ -62,7 +65,7 @@ void merge(int *array, int *offset, int *src1, int start_1, int end_1, int *src2
 
 void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int *src2, int start_2, int end_2){
     int inc_power=0, mid1=0, len=0;
-    printf("src1(%d:%d), src2(%d:%d)\n", start_1, end_1, start_2, end_2);
+    printf("src1(%d:%d)=%d, src2(%d:%d)=%d\n", start_1, end_1, src1[start_1], start_2, end_2, src2[start_2]);
     // if non-overlapped
     if ( src1[end_1] <= src2[start_2] ) {
         merge(array, offset, src1, start_1, end_1, src2, start_2, end_2);
@@ -81,24 +84,35 @@ void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int
 	while ( src1[start_1+(1<<inc_power)] <= src2[start_2] ){
 	    inc_power++; // next power to be checked
 printf("%d > %d ?\n", (1<<inc_power), len);
-	    if ( (1<<inc_power) > len )
+	    if ( (1<<inc_power) > len ) {
 		break;
+	    }
 	}
 printf("inc_power=%d\n", inc_power);
 	if ( inc_power == 0)
 	    mid1 = start_1;
-	else {
-	    inc_power--; // this failed
-	    mid1 = start_1 +(1<<inc_power); 
-printf("mid1=%d\n", mid1);
+	else if ( (1<<inc_power) > len ) {
+		inc_power--;
+		if ( src1[start_1+(1<<inc_power)+1] <= src2[start_2] )
+			mid1 = start_1+(1<<inc_power)+1;
+		else
+			mid1 = start_1+(1<<inc_power);
 	}
-	    
+	else {
+	    mid1 = start_1 +(1<<inc_power) -1; 
+	}
+printf("mid1=%d\n", mid1);	    
     	// merge the 1st block  
 	printf("mergeL->src1(%d:%d), src2(%d)\n", start_1, mid1, start_2);      
     	mergeSort(array, offset, src1, start_1, mid1, src2, start_2, start_2);
-    	// swap then repeat for the remained block   
-	printf("mergeR->src2(%d:%d), src1(%d:%d)\n", start_2+1, end_2, mid1+1, end_1);
-    	mergeSort(array, offset, src2, start_2+1, end_2, src1, mid1+1, end_1);
+    	// decide the smaller repeat for the remained block   
+	if ( src1[mid1+1] <= src2[start_2+1] ) {
+		printf("mergeR->src1(%d:%d), src2(%d:%d)\n", mid1+1, end_1, start_2+1, end_2);
+    		mergeSort(array, offset, src1, mid1+1, end_1, src2, start_2+1, end_2);
+	} else { // swap
+		printf("mergeR->src2(%d:%d), src1(%d:%d)\n", start_2+1, end_2, mid1+1, end_1);
+    		mergeSort(array, offset, src2, start_2+1, end_2, src1, mid1+1, end_1);
+	}
     	// combine ?
 
     }
@@ -159,9 +173,8 @@ double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Si
 int main(int argc, char **argv){
 	double median=0;
 
-	int num1[] = {1,3};
-	int num2[] = {2,4,5};
-	median = findMedianSortedArrays(num1, 2, num2, 1);
+	int num1[] = {4,6};
+	int num2[] = {1,2,3,5,7,8};
+	median = findMedianSortedArrays(num1, 2, num2, 6);
 	printf("%f\n", median);
 }
-
