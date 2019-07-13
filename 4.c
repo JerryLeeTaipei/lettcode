@@ -64,32 +64,35 @@ void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int
         return;
     } 
    
-    // decompose for at least 2 elements
-    if ( (end_1 - start_1) > 0 ) {
-        mid1 = (end_1 - start_1)/2;
-    } else {
-	mid1 = end_1;
-    }
-    if ( (end_2 - start_2) > 0 ) {
-        mid2 = (end_2 - start_2)/2;  
-    } else {
-	mid2 = end_2;
-    }
     // decide which block to be merged when single element is seen
-    if ( mid1 == end_1 ) { // insert the left in the right
-printf("insertL->src1(%d), src2(%d:%d)\n", start_1, start_2, end_2);    
+    if ( start_1 == end_1 ) { // insert the left in the right
+	printf("insertL->src1(%d), src2(%d:%d)\n", start_1, start_2, end_2);    
 	insert(array, offset, src1[start_1], src2, start_2, end_2);
-    } else if ( mid2 == end_2 ) { // insert the right in the left
-printf("insertR->src2(%d), src1(%d:%d)\n", start_2, start_1, end_1);
+    } else if ( start_2 == end_2 ) { // insert the right in the left
+	printf("insertR->src2(%d), src1(%d:%d)\n", start_2, start_1, end_1);
 	insert(array, offset, src2[start_2], src1, start_1, end_1); 
     } else { 
-    // merge the left block  
-printf("mergeL->src1(%d:%d), src2(%d:%d)\n", start_1, mid1, start_2, mid2);      
-    mergeSort(array, offset, src1, start_1, mid1, src2, start_2, mid2);
-    // merge the right block   
-printf("mergeR->src1(%d:%d), src2(%d:%d)\n", mid1+1, end_1, mid2+1, end_2);
-    mergeSort(array, offset, src1, mid1+1, end_1, src2, mid2+1, end_2);
-    // combine ?
+	mid1 = end_1;
+	mid2 = end_2;    
+    	/* decompose for at least 2 elements
+	Divide rule: find the mid1 and mid2 so that
+	
+	(src1[mid]  < src2[mid2+1]) && (src2[mid2]  < src1[mid1+1])
+	
+    	*/
+    	if ( (end_1 - start_1) > 0 ) {
+       	 	mid1 = (end_1 - start_1)/2;
+    	} 
+    	if ( (end_2 - start_2) > 0 ) {
+        	mid2 = (end_2 - start_2)/2;  
+    	}	    
+    	// merge the left block  
+	printf("mergeL->src1(%d:%d), src2(%d:%d)\n", start_1, mid1, start_2, mid2);      
+    	mergeSort(array, offset, src1, start_1, mid1, src2, start_2, mid2);
+    	// merge the right block   
+	printf("mergeR->src1(%d:%d), src2(%d:%d)\n", mid1+1, end_1, mid2+1, end_2);
+    	mergeSort(array, offset, src1, mid1+1, end_1, src2, mid2+1, end_2);
+    	// combine ?
 
     }
     
