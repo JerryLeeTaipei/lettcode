@@ -88,18 +88,20 @@ printf("%d > %d ?\n", (1<<inc_power), len);
 		break;
 	    }
 	}
-printf("inc_power=%d\n", inc_power);
+printf("inc_power.1=%d\n", inc_power);
 	if ( inc_power == 0)
 	    mid1 = start_1;
-	else if ( (1<<inc_power) > len ) {
-		inc_power--;
-		if ( src1[start_1+(1<<inc_power)+1] <= src2[start_2] )
-			mid1 = start_1+(1<<inc_power)+1;
-		else
-			mid1 = start_1+(1<<inc_power);
-	}
 	else {
-	    mid1 = start_1 +(1<<inc_power) -1; 
+		inc_power--;
+printf("inc_power.2=%d\n", inc_power);
+		if ( ((1<<inc_power)+1) > len )
+			mid1 = start_1+(1<<inc_power);
+		else {
+			if ( src1[start_1+(1<<inc_power)+1] <= src2[start_2] )
+				mid1 = start_1+(1<<inc_power)+1;
+			else 
+				mid1 = start_1+(1<<inc_power);
+		}
 	}
 printf("mid1=%d\n", mid1);	    
     	// merge the 1st block  
