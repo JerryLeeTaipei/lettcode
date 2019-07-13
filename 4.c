@@ -146,7 +146,21 @@ int main(int argc, char **argv){
 	double median=0;
 
 	int num1[] = {1,3};
-	int num2[] = {2};
+	int num2[] = {2,4,5};
 	median = findMedianSortedArrays(num1, 2, num2, 1);
 	printf("%f\n", median);
 }
+/*
+1 3 
+    2 4 5 
+findMedianSortedArrays:(0:1), (0:2)
+src1(0:1), src2(0:2)
+mergeL->src1(0:0), src2(0:1) -> 1 vs 2,4
+src1(0:0), src2(0:1)
+merge():offset(3) --> 1, 2, 4
+mergeR->src1(1:1), src2(2:2) -> 3 vs 5
+src1(1:1), src2(2:2)
+merge():offset(5)
+1 2 4 3 5
+
+*/
