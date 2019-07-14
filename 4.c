@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 /*
 The Median is the "middle" of a sorted list of numbers.
 To find the Median, place the numbers in value order and find the middle.
@@ -64,7 +65,7 @@ void merge(int *array, int *offset, int *src1, int start_1, int end_1, int *src2
 */
 
 void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int *src2, int start_2, int end_2){
-    int inc_power=0, mid1=0, len=0;
+    int inc_power=0, mid1=0, blk_len=0, index=0,index_end=0, i=0;
     printf("src1(%d:%d)=%d, src2(%d:%d)=%d\n", start_1, end_1, src1[start_1], start_2, end_2, src2[start_2]);
     // if non-overlapped
     if ( src1[end_1] <= src2[start_2] ) {
@@ -80,11 +81,11 @@ void  mergeSort( int *array, int *offset, int *src1, int start_1, int end_1, int
 	printf("insertR->src2(%d), src1(%d:%d)\n", start_2, start_1, end_1);
 	insert(array, offset, src2[start_2], src1, start_1, end_1); 
     } else { 
-	len = end_1 - start_1;
+	blk_len = end_1 - start_1;
 	while ( src1[start_1+(1<<inc_power)] <= src2[start_2] ){
 	    inc_power++; // next power to be checked
-printf("%d > %d ?\n", (1<<inc_power), len);
-	    if ( (1<<inc_power) > len ) {
+printf("%d > %d ?\n", (1<<inc_power), blk_len);
+	    if ( (1<<inc_power) > blk_len ) {
 		break;
 	    }
 	}
@@ -92,16 +93,19 @@ printf("inc_power.1=%d\n", inc_power);
 	if ( inc_power == 0)
 	    mid1 = start_1;
 	else {
+		index_end = start_1 + (1<<inc_power);
 		inc_power--;
-printf("inc_power.2=%d\n", inc_power);
-		if ( ((1<<inc_power)+1) > len )
-			mid1 = start_1+(1<<inc_power);
-		else {
-			if ( src1[start_1+(1<<inc_power)+1] <= src2[start_2] )
-				mid1 = start_1+(1<<inc_power)+1;
-			else 
-				mid1 = start_1+(1<<inc_power);
+		index = (1<<inc_power);
+printf("inc_power.2=%d, check index=%d to index_end=%d\n", inc_power, index, index_end);
+		index += start_1;
+		while ( index < index_end ) {
+			if ( src1[index] <= src2[start_2] )
+				index++;
+			else {
+				break;
+			}
 		}
+		mid1 = index - 1;
 	}
 printf("mid1=%d\n", mid1);	    
     	// merge the 1st block  
@@ -170,6 +174,7 @@ double findMedianSortedArrays(int* nums1, int nums1Size, int* nums2, int nums2Si
 
     return median_value;
 }
+
 
 
 int main(int argc, char **argv){
