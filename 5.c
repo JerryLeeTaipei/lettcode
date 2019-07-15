@@ -2,6 +2,17 @@
 #include <string.h>
 #include <stdlib.h>
 
+/*
+	palindrome:
+	
+	a word or group of words that is the same when you read it forwards from the beginning or backwards from the end:
+	
+	"aba", "ccc", "abcdcba"
+	
+	Both looking from the left to right and right to the left are the same.
+*/
+
+
 char * longestPalindrome(char * s){
     int len=0, answer_len=1, tmp_answer_len=0, tested_len=0;
     char *ptr=NULL, target=0, *tmp_ptr=NULL, *answer_ptr=NULL;
