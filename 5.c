@@ -29,14 +29,17 @@ char *find_maxSymmetry(char *s, char *ptr, int *symmetry_len) {
 
     // watch out for the starting and ending
     while ( len > 1 ) { // symmetry is found
-       if ( (l_ptr == s) || ( *r_ptr == 0) ) // touch the start or ending
+        printf("%c-%c\n", *l_ptr, *r_ptr);
+        if ( (l_ptr == s) || ( *r_ptr == 0) ) { // touch the start or ending
+            printf("The end\n");
             break;
-       else {
+        } else {
             l_ptr--;
             r_ptr++;
             if ( *(l_ptr) == *(r_ptr)  ) { // continuous symmetry
-                len++;
+                len += 2;
             } else { // end of symmetry
+                printf("sym is broken\n");
                 // rollback
                 l_ptr++;
                 r_ptr--;
