@@ -15,4 +15,6 @@ Exercises for problems in LettCode
 
 5(Medium). Longest Palindromic Substring (https://leetcode.com/problems/longest-palindromic-substring/)
 
+6(Medium) ZigZag Conversion ( https://leetcode.com/problems/zigzag-conversion/ )
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
