@@ -1,97 +1,161 @@
-
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
 
 
+/*
+  l_ptr  ptr  r_ptr
+         |
+         |
+
+  M      T      M
+         O      O
+  X      X
+
+  Return
+
+  sym_len the max. length of the symmetry
+
+  0 odd symmetry
+  1 even symmetry for the right
+  -1 even symmetry for the left
+
+*/
 
 
-char *find_maxSymmetry(char *s, char *ptr, int *symmetry_len) {
-    char * turning_ptr=NULL, *l_ptr=NULL, *r_ptr=NULL;
-    int len = 1;
+int bestSymmetry(char *s, char *c_ptr, int *sym_level){
+    int level = 0, ret=0;
+    char *l_ptr=NULL, *r_ptr=NULL;
 
-    l_ptr = ptr;
-    if ( (*(ptr+1) != 0) &&  (*(ptr+2) != 0) ) { // test odd symmetric
-	printf("test odd sym\n");
-        if ( *(ptr) == *(ptr+2) ) {
-            turning_ptr = ptr +1;
-            r_ptr = ptr+2;
-            len = 3;
-        }
-    } 
-    if ( turning_ptr == NULL ){ // test even symmetric
-	printf("test even sym\n");
-        if ( *(ptr) == *(ptr+1) ) {
-            r_ptr = ptr+1;
-            len = 2;
-        }
-    }
+    l_ptr = c_ptr-1;
+    r_ptr = c_ptr+1;
 
-    // watch out for the starting and ending
-    while ( len > 1 ) { // symmetry is found
-        printf("%c-%c\n", *l_ptr, *r_ptr);
-        if ( (l_ptr == s) || ( *r_ptr == 0) ) { // touch the start or ending
-            printf("The end\n");
-            break;
-        } else {
-            l_ptr--;
-            r_ptr++;
-            if ( *(l_ptr) == *(r_ptr)  ) { // continuous symmetry
-                len += 2;
-            } else { // end of symmetry
-                printf("sym is broken\n");
-                // rollback
-                l_ptr++;
-                r_ptr--;
-                break;
+    while ( 1 ) {// test odd symmetric
+        if ( *l_ptr == *r_ptr ) {
+            level++; 
+            if ( (l_ptr == s) || (*r_ptr == 0) ) // end
+		break;
+            else {
+                l_ptr--;
+                r_ptr++;
             }
-        }
+        } else
+            break;
+    } 
+    *sym_level = level;
+    printf("tested odd sym level(%d)\n", *sym_level);
+    level = 0;
+    // test even symmetric
+    l_ptr = c_ptr;// test right
+    r_ptr = c_ptr+1;
+    while ( 1 ) {
+        if ( *l_ptr == *r_ptr ) {
+            level++; 
+            if ( (l_ptr == s) || (*r_ptr == 0) ) // end
+		break;
+            else {
+                l_ptr--;
+                r_ptr++;
+            }
+        } else
+            break;
     }
+    if ( level > *sym_level ) {
+        *sym_level = level;
+        ret = 1;
+    }
+    printf("tested even-right sym: level(%d) > system_level(%d)?\n", level, *sym_level); // test even symmetric
+    level = 0;
+    l_ptr = c_ptr-1;// test left
+    r_ptr = c_ptr;
+    while (1 ) {
+        if ( *l_ptr == *r_ptr ) {
+            level++; 
+            if ( (l_ptr == s) || (*r_ptr == 0) ) // end
+		break;
+            else {
+                l_ptr--;
+                r_ptr++;
+            }
+        } else
+            break;
+    }
+    if ( level > *sym_level ) {
+        *sym_level = level;
+        ret = -1;
+    }
+    printf("tested even-left sym: level(%d) > system_level(%d)\n", level, *sym_level); // test even symmetric
+    return ret;
+}
 
-    *symmetry_len = len;
-    printf("%c has max. len-%d symmetry:\n", *ptr, len);
+char *find_maxSymmetry(char *s,  int *symmetry_len) {
+    char *ptr=NULL, *l_ptr=NULL, *best_ptr=NULL;
+    int sym_type=0, sym_level=0, best_level=0, best_len=0, len=0;
+
+    *symmetry_len = 0;
+    // skip the 1st char and NULL
+    if ( s ) {
+        if ( strlen(s) == 1 ) {
+            *symmetry_len = 1;
+            return s;
+        } else {
+            ptr = s + 1;
+            while ( *ptr != 0 ) {
+                sym_type = bestSymmetry(s, ptr, &sym_level);
+                printf("best_level(%d)-best_len(%d): sym_type(%d), sym_level(%d): %s\n", best_level, best_len, sym_type, sym_level, ptr);               
+                if ( sym_type == 0 ) { // odd
+                        len = 1 + (2 * sym_level);
+                        l_ptr = ptr - sym_level;
+                } else if ( sym_type == 1 ) { // even symmetry for the right
+                        len = (2 * sym_level);
+                        l_ptr = ptr - sym_level +1;
+                } else { // even symmetry for the left
+                        len = (2 * sym_level);
+                        l_ptr = ptr - sym_level;
+                }
+                if ( len > best_len ) {
+                    best_level = sym_level;
+                    best_len = len;
+                    best_ptr = l_ptr;
+                }
+                ptr++;
+            }
+        }            
+    } else {
+        return NULL; 
+    }
+    printf("%c has max. len-%d symmetry:\n", *best_ptr, best_len);
     int i=0;
-    for (i=0; i< len; i++)
-        printf("%c ", l_ptr[i]);
+    for (i=0; i< best_len; i++)
+        printf("%c ", best_ptr[i]);
     printf("\n");
-    return l_ptr;
+    *symmetry_len = best_len;
+    return best_ptr;
 }
 
 char * longestPalindrome(char * s){
-    int len=0, tested_len=0, answer_len=1, tmp_answer_len=1;
-    char *answer_ptr=NULL, *ptr=NULL, *tmp_answer_ptr=NULL;
+    int answer_len=1;
+    char *answer_ptr=NULL, *ptr=NULL;
     
-    len = strlen(s);
-    answer_ptr = s;
-    ptr = s;
-    while ( *ptr != 0 ) {
-        tested_len = len - (ptr - s); // tested_len included the target
-	printf("%d: find for remained len(%d)\n", answer_len, tested_len);
-	if ( *(ptr + 1) == 0 ) // ignore the last char
-		break;
-// main - begins
-        tmp_answer_ptr = find_maxSymmetry(s, ptr, &tmp_answer_len);
-        if ( tmp_answer_len > answer_len ) {
-            answer_len = tmp_answer_len;
-            answer_ptr = tmp_answer_ptr;
-        }
-// main - ends
-	printf("Current max. len(%d): %s\n", answer_len, answer_ptr);    
-        ptr++; // shift 1 for next test
-	if ( *ptr == 0 )
-		break;
-    }// while
-    ptr = (char *) malloc(sizeof(char) * (answer_len+1) );
-    strncpy(ptr, answer_ptr, answer_len);
-    ptr[answer_len] = 0;
+    if ( strlen(s) > 0 ) {
+        answer_ptr = find_maxSymmetry(s, &answer_len);
+        ptr = (char *) malloc(sizeof(char) * (answer_len+1) );
+        strncpy(ptr, answer_ptr, answer_len);
+        ptr[answer_len] = 0;
+    } else {
+        ptr = (char *) malloc(sizeof(char)); 
+        *ptr = 0;
+    }
     return ptr;
 }
 
+
 int main(){
 	char *answer=NULL;
-	answer = longestPalindrome("aaaa");
-	if ( answer )
+	answer = longestPalindrome("jhgtrclvzumufurdemsogfkpzcwgyepdwucnxrsubrxadnenhvjyglxnhowncsubvdtftccomjufwhjupcuuvelblcdnuchuppqpcujernplvmombpdttfjowcujvxknzbwmdedjydxvwykbbamfnsyzcozlixdgoliddoejurusnrcdbqkfdxsoxxzlhgyiprujvvwgqlzredkwahexewlnvqcwfyahjpeiucnhsdhnxtgizgpqphunlgikogmsffexaeftzhblpdxrxgsmeascmqngmwbotycbjmwrngemxpfakrwcdndanouyhnnrygvntrhcuxgvpgjafijlrewfhqrguwhdepwlxvrakyqgstoyruyzohlvvdhvqmzdsnbtlwctetwyrhhktkhhobsojiyuydknvtxmjewvssegrtmshxuvzcbrabntjqulxkjazrsgbpqnrsxqflvbvzywzetrmoydodrrhnhdzlajzvnkrcylkfmsdode");
+	if ( answer ) {
 		printf("%s\n", answer);
-	else
+                free(answer);
+	} else
 		printf("NULL input\n");
 }
