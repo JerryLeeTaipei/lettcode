@@ -23,6 +23,34 @@ P     I    N
 A   L S  I G
 Y A   H R
 P     I
+
+ 0                           (r-1)*2
+(1)                       .  (r-1)*2 +1
+(2)                   .      (r-1)*2 +2
+ .             (r+1)         . 
+ .       (r)                 .
+(r-1)                        (r-1)*3
+
+
+The result array is rows * columns.
+
+How many colums are needed?
+
+the length of the string is l, the rows is r,
+
+ (l-1) / (r-1) = n
+ (l-1) % (r-1) = tail
+
+if (n % 2 == 1)
+     n = n-1   
+
+if ( tail == 0 )
+    c = (n-1) * r
+else
+    c = (n-2) * r + tail 
+       
+
+
 */
 
 char * convert(char * s, int numRows){
