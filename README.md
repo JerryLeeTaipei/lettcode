@@ -17,4 +17,6 @@ Exercises for problems in LettCode
 
 6(Medium) ZigZag Conversion ( https://leetcode.com/problems/zigzag-conversion/ )
 
+7. Reverse Integer(easy) ( https://leetcode.com/problems/reverse-integer/ )
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
