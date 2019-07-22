@@ -43,3 +43,123 @@ Explanation: The number "-91283472332" is out of the range of a 32-bit signed in
 
 
 */
+
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+#define BITS_LIMIT	(1<<31) 
+#define MAX_INPUT_LEN    10
+
+int convert(int sign, char *num_str){
+    long upper_l= 1;
+    long lower_l = 1;
+    long num=0;
+    int len=0;
+    char *ptr=NULL;
+    
+    upper_l = (upper_l << 31) - 1;
+    lower_l = (lower_l <<31);
+
+    printf("check bounds: %ld, %ld\n", lower_l, upper_l);
+    if ( strlen(num_str) > MAX_INPUT_LEN )
+        if ( sign > 0 ){
+            printf("Overflow: > %ld\n", upper_l);
+            return upper_l;
+        } else {
+            printf("underflow: < %ld\n", lower_l);
+            return (0 - lower_l);
+        }
+    ptr = num_str;
+    while ( *ptr != 0) {
+        num = num*10 + (*ptr - '0'); 
+        ptr++;  
+    }
+    if ( (sign>0) && (num >= upper_l) ) {
+        printf("Overflow: > %ld\n", upper_l);
+        return upper_l;
+    }
+    if ( (sign<0) && (num > lower_l) ) {
+        printf("underflow: < %ld\n", lower_l);
+        return (0 - lower_l);
+    }
+       
+    if ( sign < 0 )
+        num = 0 - num;
+    return num;
+}
+
+
+/* return the the valid number string */
+char *extract_numStr(char *s, int *sign, int *num_len){
+    char *ptr=NULL, *n_ptr=NULL;
+    int len=-1, pol=0;
+
+    if ( strlen(s) > 0 ) {
+        ptr = s;
+        while ( (*ptr!=0) ){
+            if ( len < 0 ) {// process heading
+                if ( *ptr != ' ' ) {
+                    if ( *ptr == '+') {
+                        pol = 1;
+                        len = 0;
+                        ptr++;
+                    } else if ( *ptr == '-' ){
+                        pol = -1;
+                        len = 0;
+                        ptr++;
+                    } else {
+                        if ( ((*ptr - '0') >=0) && ((*ptr - '9') <=0) ) 
+                            len = 0;
+                        else {
+                            printf("Non valid heading : %s\n", ptr);   
+                            return NULL;
+                        }
+                    }                           
+                }
+            }
+            if ( len >= 0 ) {// process num char
+                if ( ((*ptr - '0') >=0) && ((*ptr - '9') <=0) ) {
+                    len++;
+                } else
+                    break;
+            }
+            ptr++;
+        }// while
+        
+        if ( len > 0 ){
+            *sign = pol;
+            *num_len = len;
+            n_ptr = ptr - len;    
+            ptr = malloc(len+1);
+            ptr[len] = 0;
+            strncpy(ptr, n_ptr, len);
+            printf("copy %d bytes from n_ptr: %s\n", len, n_ptr);
+        }
+    }  
+    return ptr;        
+}
+
+int myAtoi(char * str){
+    int len=0, num=0, sign=0;
+    char *ptr=NULL;
+
+    ptr = extract_numStr(str, &sign, &len);
+    if ( ptr && (len > 0) ) {
+        printf("%s --> %s\n", str, ptr);
+        //num = atoi(ptr);
+        num = convert(sign, ptr);
+        free(ptr);
+    }
+    return num;
+}
+
+
+#define INPUT_STR	"   -42"
+
+int main(){
+ int out=0;
+
+ out = myAtoi(INPUT_STR);
+ printf("%s --> %d\n", INPUT_STR, out);
+}
