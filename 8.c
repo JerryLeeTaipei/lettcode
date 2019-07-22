@@ -61,7 +61,7 @@ int convert(int sign, char *num_str){
     upper_l = (upper_l << 31) - 1;
     lower_l = (lower_l <<31);
 
-    printf("check bounds: %ld, %ld\n", lower_l, upper_l);
+
     if ( strlen(num_str) > MAX_INPUT_LEN )
         if ( sign > 0 ){
             printf("Overflow: > %ld\n", upper_l);
@@ -75,6 +75,7 @@ int convert(int sign, char *num_str){
         num = num*10 + (*ptr - '0'); 
         ptr++;  
     }
+    printf("%ld: check (%d) bounds: %ld, %ld\n", num, sign, lower_l, upper_l);    
     if ( (sign>0) && (num >= upper_l) ) {
         printf("Overflow: > %ld\n", upper_l);
         return upper_l;
@@ -93,7 +94,7 @@ int convert(int sign, char *num_str){
 /* return the the valid number string */
 char *extract_numStr(char *s, int *sign, int *num_len){
     char *ptr=NULL, *n_ptr=NULL;
-    int len=-1, pol=0;
+    int len=-1, pol=1;
 
     if ( strlen(s) > 0 ) {
         ptr = s;
@@ -101,21 +102,47 @@ char *extract_numStr(char *s, int *sign, int *num_len){
             if ( len < 0 ) {// process heading
                 if ( *ptr != ' ' ) {
                     if ( *ptr == '+') {
+                        if ( (ptr != s) && (*(ptr-1) != ' ') ) {
+                            printf("+ must follow WS\n");
+                            return NULL;
+                        }                            
                         pol = 1;
-                        len = 0;
+                        // skip 0 until the next non-0 is found
                         ptr++;
+                        while ( *ptr != 0 ) {
+                            if ( *ptr != '0' )
+                                break;
+                            ptr++;
+                        }
+                        len = 0;
                     } else if ( *ptr == '-' ){
+                        if ( (ptr != s) && (*(ptr-1) != ' ') ) {
+                            printf("- must follow WS\n");
+                            return NULL;
+                        }                     
                         pol = -1;
-                        len = 0;
+                        // skip 0 until the next non-0 is found
                         ptr++;
+                        while ( *ptr != 0 ) {
+                            if ( *ptr != '0' )
+                                break;
+                            ptr++;
+                        }
+                        len = 0;
                     } else {
-                        if ( ((*ptr - '0') >=0) && ((*ptr - '9') <=0) ) 
-                            len = 0;
-                        else {
+                        if ( ((*ptr - '0') >= 0) && ((*ptr - '9') <=0) ) {
+                            if ( *ptr != '0' )// skip leading 0
+                                len = 0;
+                        } else {
                             printf("Non valid heading : %s\n", ptr);   
                             return NULL;
                         }
                     }                           
+                } else {// rule for WS
+                    if ( (ptr != s) && (*(ptr-1) != ' ') ) {
+                        printf("none can be ahead of WS\n");
+                        return NULL;
+                    } 
                 }
             }
             if ( len >= 0 ) {// process num char
@@ -155,7 +182,7 @@ int myAtoi(char * str){
 }
 
 
-#define INPUT_STR	"   -42"
+#define INPUT_STR	"0  123"
 
 int main(){
  int out=0;
