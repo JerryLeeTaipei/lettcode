@@ -19,4 +19,6 @@ Exercises for problems in LettCode
 
 7. Reverse Integer(easy) ( https://leetcode.com/problems/reverse-integer/ )
 
+8. String to Integer (atoi)(medium) ( https://leetcode.com/problems/string-to-integer-atoi/ )
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
