@@ -21,4 +21,6 @@ Exercises for problems in LettCode
 
 8. String to Integer (atoi)(medium) ( https://leetcode.com/problems/string-to-integer-atoi/ )
 
+9. Palindrome Number (easy) ( https://leetcode.com/problems/palindrome-number/ )
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
