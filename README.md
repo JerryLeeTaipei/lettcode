@@ -23,4 +23,6 @@ Exercises for problems in LettCode
 
 9. Palindrome Number (easy) ( https://leetcode.com/problems/palindrome-number/ )
 
+10. Regular Expression Matching(hard) ( https://leetcode.com/problems/regular-expression-matching/ )
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
