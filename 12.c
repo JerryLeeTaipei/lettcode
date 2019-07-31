@@ -41,3 +41,104 @@ Input: 1994
 Output: "MCMXCIV"
 Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+char * intToRoman(int num){
+    char *ptre=NULL, *rome=NULL;
+    int q=0, divider=1000;
+    
+    rome = (char *) malloc(17);
+    rome[0] = 0;
+    while (divider > 0) {
+        printf("num(%d), q(%d), divider(%d)\n", num, q, divider);
+        q = num / divider;
+        if ( divider == 1000 ) { // M
+            num -= divider * q;
+            while ( q > 0 ) {
+                strncat(rome, "M", 1);
+                q--;
+            }
+        } else if ( divider == 100 ) { // D +- C
+            num -= divider * q;
+             if ( q == 9 ) {
+                strncat(rome, "CM", 2);
+             } else if ( q > 5 ) {
+                strncat(rome, "D", 1);
+                q -= 5;
+                while ( q > 0 ) {
+                    strncat(rome, "C", 1);
+                    q--;
+                }
+             } else if ( q == 5 ) {
+                strncat(rome, "D", 1);
+             } else if ( q == 4 ) {
+                strncat(rome, "CD", 2);
+             } else {                
+                while ( q > 0 ) {
+                    strncat(rome, "C", 1);
+                    q--;
+                }
+             }
+        } else if ( divider == 10 ) { // L +- X
+            num -= divider * q;
+             if ( q == 9 ) {
+                strncat(rome, "XC", 2);
+             } else if ( q > 5 ) {
+                strncat(rome, "L", 1);
+                q -= 5;
+                while ( q > 0 ) {
+                    strncat(rome, "X", 1);
+                    q--;
+                }
+             } else if ( q == 5 ) {
+                strncat(rome, "L", 1);
+             } else if ( q == 4 ) {
+                strncat(rome, "XL", 2);
+             } else {                
+                while ( q > 0 ) {
+                    strncat(rome, "X", 1);
+                    q--;
+                }
+             }
+        } else if ( divider == 1 ) { // V +- I
+            num =0;
+             if ( q == 9 ) {
+                strncat(rome, "IX", 2);
+             } else if ( q > 5 ) {
+                strncat(rome, "V", 1);
+                q -= 5;
+                while ( q > 0 ) {
+                    strncat(rome, "I", 1);
+                    q--;
+                }
+             } else if ( q == 5 ) {
+                strncat(rome, "V", 1);
+             } else if ( q == 4 ) {
+                strncat(rome, "IV", 2);
+             } else {                
+                while ( q > 0 ) {
+                    strncat(rome, "I",1);
+                    q--;
+                }
+             }
+        }    
+        
+        divider = divider/10;
+    }
+    rome[16] = 0;
+    return rome;
+}
+
+
+int main(){
+  int num = 188;
+  char *ptr=NULL;
+  
+  ptr = intToRoman(num);
+  printf("%d --> %s\n", num, ptr);
+  free(ptr);
+}
