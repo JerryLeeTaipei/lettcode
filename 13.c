@@ -43,3 +43,112 @@ Output: 1994
 Explanation: M = 1000, CM = 900, XC = 90 and IV = 4.
 */
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+int romanToInt(char * s){
+    int num=0, i=0, tmp=0;
+    char *ptr=NULL;
+
+    ptr = s;
+    while ( *ptr != 0) {
+        tmp = 0;
+        // 1~ 4
+        if ( *ptr == 'I' ) {//         I:    
+             if ( *(ptr+1) == 'X' ) {
+                tmp = 9;
+                ptr += 2;
+            } else if ( *(ptr+1) == 'V' ) {
+                tmp = 4;
+                ptr += 2;
+            } else {
+                tmp = 1;
+                ptr++;
+                while ( *ptr == 'I' ) {
+                    tmp += 1; 
+                    ptr++;
+                }
+            }        
+        } else if ( *ptr == 'V' ) {//  I:V:III
+            // count V
+            tmp = 5;
+            ptr++;
+            while ( *ptr == 'I' ) {
+                tmp += 1; 
+                ptr++;
+            }        
+        } else if ( *ptr == 'X' ) {//  I:XXX:
+            if ( *(ptr+1) == 'C' ) {
+                tmp = 90;
+                ptr += 2;
+            } else if ( *(ptr+1) == 'L' ) {
+                tmp = 40;
+                ptr += 2;
+            } else {
+                tmp = 10;
+                ptr++;
+                while ( *ptr == 'X' ) {
+                    tmp += 10; 
+                    ptr++;
+                }
+            }       
+        } else if ( *ptr == 'L' ) {//  X:L:XXX
+            // count L
+            tmp = 50;
+            ptr++;
+            while ( *ptr == 'X' ) {
+                tmp += 10; 
+                ptr++;
+            }        
+        } else if ( *ptr == 'C' ) {//  X:CCC:
+            if ( *(ptr+1) == 'M' ) {
+                tmp = 900;
+                ptr += 2;
+            } else if ( *(ptr+1) == 'D' ) {
+                tmp = 400;
+                ptr += 2;
+            } else {
+                tmp = 100;
+                ptr++;
+                while ( *ptr == 'C' ) {
+                    tmp += 100; 
+                    ptr++;
+                }
+            }
+        } else if ( *ptr == 'D' ) {//  C:D:CCC
+            // count D
+            tmp = 500;
+            ptr++;
+            while ( *ptr == 'C' ) {
+                tmp += 100; 
+                ptr++;
+            }       
+        } else if ( *ptr == 'M' ) {//  C:MMM:
+            tmp = 1000;
+            ptr++;
+            while ( *ptr == 'M' ) {
+                tmp += 1000; 
+                ptr++;
+            }
+        } else {
+            printf("incorrect %c\n", *ptr);
+            return 0;
+        }
+        num += tmp;
+    }// while
+
+    return num;
+}
+
+#define ROME "IX"
+
+int main(){
+  int num = 0;
+
+  
+  num = romanToInt(ROME);
+  printf("%s --> %d\n", ROME, num);
+
+}
