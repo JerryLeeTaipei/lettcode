@@ -29,4 +29,6 @@ Exercises for problems in LettCode
 
 12. Integer to Roman(medium)
 
+13. Roman to Integer(medium)
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
