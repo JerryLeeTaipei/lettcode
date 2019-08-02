@@ -31,4 +31,6 @@ Exercises for problems in LettCode
 
 13. Roman to Integer(medium)
 
+14. Longest Common Prefix (easy). ( https://leetcode.com/problems/longest-common-prefix/ )
+
 894(medium). All Possible Full Binary Trees ( https://leetcode.com/problems/all-possible-full-binary-trees/ )
