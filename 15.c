@@ -36,18 +36,34 @@ struct node *find_node_gt(struct node *current, int num){
     return NULL;
 }
     
-struct node *find_node(struct node *current, int num){
-    
-    if ( current ) {
-        if ( current->val == num)
-            return current;
-        if ( current->left ) {
-            find_node(current->left, num);
-        }
-        if ( current->right ) {
-            find_node(current->right, num);
+struct node *find_node_nz(struct node *current, int num){
+    struct node *tmp_node=NULL;
+
+    //tmp_node = current;
+    //printf("find_node_nz(): try to find under node(index=%d, val=%d)\n", current->index, current->val);
+
+    if ( num <= current->val )
+        tmp_node = current->left;
+    else
+        tmp_node = current->right;
+    while ( tmp_node != NULL ){
+        //printf("node(index=%d, val=%d) is %d?\n", tmp_node->index, tmp_node->val, num);
+        if ( tmp_node->val == num ) {
+            return tmp_node;
+        } else {
+            // check stop condition
+            if ( ( (num > 0) && (tmp_node->val > num) ) ||
+                 ( (num < 0) && (tmp_node->val < num) ) ) {
+                  //printf("stop searching %d at node(%d,%d)\n", num, tmp_node->index, tmp_node->val);
+                  return NULL;
+            }
+            if ( num <= tmp_node->val )
+                tmp_node = tmp_node->left;
+            else
+                tmp_node = tmp_node->right;
         }
     } 
+
     return NULL;
 }  
   
@@ -56,7 +72,7 @@ void add_node(struct node *root, int num){
     
     if ( num == 0 ){
         root_count++;
-        //printf("root(0) increased(%d)\n", root_count);
+        printf("root(0) increased(%d)\n", root_count);
         return;
     }
     tmp = root;
@@ -75,10 +91,10 @@ void add_node(struct node *root, int num){
     tmp->right = NULL; 
     if ( num > last->val ) {
         last->right = tmp;
-        //printf("node(%d, %d) added under node(%d,%d)'s right\n", tmp->index, tmp->val, last->index, last->val);
+        printf("node(%d, %d) added under node(%d,%d)'s right\n", tmp->index, tmp->val, last->index, last->val);
     } else {
         last->left = tmp;    
-        //printf("node(%d, %d) added under node(%d,%d)'s left\n", tmp->index, tmp->val, last->index, last->val);
+        printf("node(%d, %d) added under node(%d,%d)'s left\n", tmp->index, tmp->val, last->index, last->val);
     }
 
 }
@@ -106,6 +122,7 @@ void release_bst(struct node *current){
     } 
 }
 
+
 int find_1Sum(struct node *root, struct node *current, int *num3){        
     int ret=0, target_val=0;
     struct node *tmp_r=NULL;
@@ -113,125 +130,170 @@ int find_1Sum(struct node *root, struct node *current, int *num3){
     target_val = 0 - (2 *current->val);
  
     if ( target_val > 0 ) {
-        //printf("%d: serach %d from the right...\n", current->val, target_val);
+        //printf("find_1Sum():%d: serach %d from the right...\n", current->val, target_val);
         tmp_r = find_node_gt(root, target_val);   
         if ( tmp_r ) {
             if ( tmp_r->val == target_val ) {
                 *num3 = tmp_r->val;
+                //printf("find_1Sum(): found %d\n", *num3);
                 return 1;
             }      
         } 
     } 
-    //printf("Set not found for %d\n", current->val);
+    //printf("find_1Sum():Set not found for %d\n", current->val);
     return ret;
 }
  
 int find_2Sum(struct node *root, struct node *current, int *num2, int *num3){        
     int ret=0, target_val=0;
-    struct node *tmp_l=NULL, *tmp_r=NULL;
+    struct node *tmp=NULL, *tmp_l=NULL, *tmp_r=NULL;
     
     target_val = 0 - current->val;
  
     if ( target_val > 0 ) {
-        //printf("%d: searching %d from the right...\n", current->val, target_val);
+        printf("%d: searching 2Sum(%d) from the right...\n", current->val, target_val);
         tmp_r = find_node_gt(root, 1);   
-        while ( tmp_r ) {
-            //printf("%d: searching %d from the right...\n", tmp_r->val, target_val);
+        if ( tmp_r ) {
+            printf("%d: searching %d from the right...\n", tmp_r->val, target_val);
             if ( tmp_r->val > target_val ) { 
-                //printf("no_2\n");    
+                //printf("over\n");    
                 return ret; // no match
             } else { // num2 qualified
-                target_val = tmp_r->val - target_val;
+                *num2 = tmp_r->val;
+                printf("[%d,%d,\n", current->val, *num2);
+                target_val = *num2 - target_val;
                 if ( target_val == 0 ) {
-                    if ( root_count > 0 ) {
-                        *num2 = tmp_r->val;
+                    if ( root_count > 0 ) {                       
                         *num3 = 0;
-                        //printf("match (%d,%d) for %d\n", *num2, *num3, current->val);
+                        printf("match (%d,%d) for %d\n", *num2, *num3, current->val);
                         return 1;
                     }
                     //printf("no_3\n"); 
                     return ret; // no need for num3
                 } else {
-                    *num2 = tmp_r->val;
-                    tmp_l = find_node(root, target_val);
-                    if ( tmp_l ) {
-                        *num3 = tmp_l->val;
-                        //printf("match (%d,%d) for %d\n", *num2, *num3, current->val);
-                        return 1;
-                    } else 
-                        break;
+                    if ( target_val < 0 ) { // not enough, try the right(>0) for match
+                        //printf("%d: searching %d from the right...\n", current->val, 0 - target_val);
+                        //tmp = find_node(root, 0 - target_val);
+                        tmp = find_node_nz(tmp_r, 0 - target_val);
+                        if ( tmp ) {
+                            *num3 = tmp->val;
+                            //printf("match (%d,%d) for %d\n", *num2, *num3, current->val);
+                             return 1;
+                        } else{
+                            //printf("Failed match(>0) for %d\n", current->val);
+                            return ret;
+                        }
+                    } else if ( target_val > 0 ){//  try the left(<0) for match
+                       //printf("%d: searching %d from the left...\n", current->val, target_val);
+                        tmp_l = find_node_nz(root, target_val);
+                        if ( tmp_l ) {
+                            *num3 = tmp_l->val;
+                            //printf("match (%d,%d) for %d\n", *num2, *num3, current->val);
+                         return 1;
+                        } else{
+                            //printf("Failed match(<0) for %d\n", current->val);
+                            return ret;
+                        }
+                        
+                    } else {// num3 is not needed
+                        //printf("num3 is not needed for %d\n", current->val);
+                        return ret;
+                    }
                 }
-            }
-            // try deeper
-            tmp_r = tmp_r->right;       
-        } //while
-    } else if  ( target_val < 0 ) {
-    
-    } else {
-    
-    }
-    printf("Set not found for %d\n", current->val);
+            }     
+        } //
+    } 
+    //printf("Set not found for %d\n", current->val);
     return ret;
 }
  
+#define MATCH_RECORD_SIZE   sizeof(int *) * 3
+
+
 int** find_3Sum(int numsSize, struct node *root, int *returnSize, int **returnColumnSizes){
     int **result=NULL;
     int *set=NULL;
     int *sizeList=NULL;
     int num2=0, num3=0, match_size=0, last_num=0, duplicated=0;
     struct node *tmp_node=NULL;
-
-    result = (int **) malloc( sizeof(int *) *(numsSize/3));   
-    sizeList = (int *) malloc( sizeof(int) *(numsSize/3));
-
-    *returnColumnSizes = sizeList;
+/*
+    result = (int **) malloc( sizeof(int *) *(numsSize));       
+    sizeList = (int *) malloc( sizeof(int) *(numsSize));
+*/
+    
     //printf("*returnColumnSizes = sizeList: sizeList=%p, returnColumnSizes=%p, *returnColumnSizes=%p\n", sizeList, returnColumnSizes,  *returnColumnSizes);
     
     tmp_node = root;
     last_num = 1; // impossible
     duplicated = 0;
-    while ( tmp_node ) {
+    while ( tmp_node != NULL ) {
+        //printf("find_3Sum(): %d\n", tmp_node->val);
         if ( tmp_node->val != last_num ) {
             duplicated = 0;
-            if ( find_2Sum(root, tmp_node, &num2, &num3) ){
+            if  ( tmp_node->val == 0 ) { // check the root node 
+                if ( root_count >= 3 ){// at least one "all 3 zeos" case
+                    set = malloc(sizeof(int)*3);
+                    set[0] = 0;
+                    set[1] = 0;
+                    set[2] = 0;
+                    match_size++;
+                    result = (int **) realloc(result, match_size * sizeof(int *));
+                    result[match_size-1] = set;
+                    sizeList = (int *) realloc(sizeList, match_size* sizeof(int));
+                    sizeList[match_size-1] = 3;                     
+                    //printf("match (0,0,0) for %d\n", tmp_node->val);
+                }
+            } else if ( find_2Sum(root, tmp_node, &num2, &num3) ){
                 set = malloc(sizeof(int)*3);
                 set[0] = tmp_node->val;
                 set[1] = num2;
                 set[2] = num3;
-                result[match_size] = set;
-                sizeList[match_size] = 3;  
                 match_size++;
+                result = (int **) realloc(result, match_size * sizeof(int *));
+                result[match_size-1] = set;
+                sizeList = (int *) realloc(sizeList, match_size* sizeof(int));
+                sizeList[match_size-1] = 3;    
             }
         } else { // duplicated
             duplicated++;
             if ( duplicated == 1 ) {// val occurs twice
-                printf("%d is duplicated twice\n", tmp_node->val);
+                //printf("%d is duplicated twice\n", tmp_node->val);
                 if ( find_1Sum(root, tmp_node,  &num3) ){
                     set = malloc(sizeof(int)*3);
                     set[0] = tmp_node->val;
                     set[1] = set[0];
                     set[2] = num3;
-                    result[match_size] = set;
-                    sizeList[match_size] = 3;  
                     match_size++;
+                    result = (int **) realloc(result, match_size * sizeof(int *));
+                    result[match_size-1] = set;
+                    sizeList = (int *) realloc(sizeList, match_size* sizeof(int));
+                    sizeList[match_size-1] = 3; 
                 }
             } else if ( (duplicated == 2) && (tmp_node->val == 0) ) {
                 set = malloc(sizeof(int)*3);
                 set[0] = tmp_node->val;           
                 set[1] = 0;
-                set[2] = 0;  
-                result[match_size] = set;
-                sizeList[match_size] = 3;  
-                match_size++;                        
+                set[2] = 0; 
+                match_size++;
+                result = (int **) realloc(result, match_size * sizeof(int *));
+                result[match_size-1] = set;
+                sizeList = (int *) realloc(sizeList, match_size* sizeof(int));
+                sizeList[match_size-1] = 3;   
             } else {               
-                printf("%d is ignored because of duplicated > twice\n", tmp_node->val);
+                //printf("%d is ignored because of duplicated > twice\n", tmp_node->val);
             }
         }
+
         last_num = tmp_node->val;
         tmp_node = tmp_node->left;
+        //printf("next node(%p)\n", tmp_node);       
         //printf("match_size=%x\n", match_size);
+        
     }
+    //printf("return match_size\n");
     *returnSize = match_size;
+    *returnColumnSizes = sizeList;
+
     return result;
 }            
 
@@ -275,9 +337,24 @@ int** threeSum(int* nums, int numsSize, int* returnSize, int** returnColumnSizes
                                     
 
 */
+/*
 #define NUMS    6
+{-1, 0, 1, 2, -1, -4};
+
+#define NUMS    7
+{-1,-2,1,-2,-5,4,1};
+
+#define NUMS    4
+{1,2,-2,-1}
+
+#define NUMS    3
+{1,-2,1}
+*/
+
+#define NUMS    5
+
 int main(){
-    int nums[NUMS]={-1, 0, 1, 2, -1, -4};
+    int nums[NUMS]={-2,0,1,1,2};
     int **answer=NULL, returnSize=0;
     int *returnColumnSizes=NULL;
     int **sets=NULL, *set=NULL;;
