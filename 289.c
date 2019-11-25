@@ -1,4 +1,8 @@
 
+#include <stdio.h>
+#include <malloc.h>
+
+
 int lives(int **board, int i, int j){
     return ( board[i-1][j-1]+board[i-1][j]+board[i-1][j+1]+board[i][j-1]+board[i][j+1]+board[i+1][j-1]+board[i+1][j]+board[i+1][j+1] );
     
@@ -61,10 +65,67 @@ void gameOfLife(int** board, int boardSize, int* boardColSize){
         for ( j=1; j<(padColSize-1); j++) {
                 board[i-1][j-1] = conv(pad, i, j); 
                 //printf("%d ", pad[i][j] );
-                //board[i-1][j-1] = pad[i][j];
         }
-        printf("\n");
+        //printf("\n");
     }
 
     
+}
+
+
+// To execute C, please define "int main()"
+
+#define ROWS    5
+#define COLS    12
+
+/*
+#define ROWS    4
+#define COLS    3
+*/
+int main() {
+    int **board=NULL;
+    int i=0, j=0, rows=0, cols=0;
+    char a[COLS] = {1,0,1,1,0,0,0,0,1,0,0,1};
+    char b[COLS] = {0,0,0,0,1,0,0,0,1,0,1,1};
+    char c[COLS] = {0,1,0,0,1,1,1,0,0,0,0,0};
+    char d[COLS] = {1,0,0,1,0,0,1,1,1,1,0,0};
+    char e[COLS] = {1,0,1,1,1,0,0,0,0,0,1,1};    
+/*  
+    char a[COLS] = {0,1,0};
+    char b[COLS] = {0,0,1};
+    char c[COLS] = {1,1,1};
+    char d[COLS] = {0,0,0}; 
+*/    
+    rows = ROWS;
+    cols = COLS;
+    
+    board = malloc(sizeof(int *) * rows);
+    for ( i=0; i<rows; i++ ) {
+        board[i] = malloc(sizeof(int) * cols);   
+    }
+    for ( j=0; j<cols; j++ ) {
+        board[0][j] = a[j];
+        board[1][j] = b[j];
+        board[2][j] = c[j];
+        board[3][j] = d[j];
+        board[4][j] = e[j];
+    }    
+
+    for (  i=0; i<rows; i++ ){
+        //printf("r%d\n", i);
+        for ( j=0; j<cols; j++) {
+            printf("%d ", board[i][j] );
+        }
+        printf("\n");
+    }
+    printf("\nnext generation\n\n");
+    gameOfLife(board, rows, &cols);
+    for (  i=0; i<rows; i++ ){
+        //printf("r%d\n", i);
+        for ( j=0; j<cols; j++) {
+            printf("%d ", board[i][j] );
+        }
+        printf("\n");
+    }   
+  return 0;
 }
