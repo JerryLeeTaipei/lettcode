@@ -1,12 +1,12 @@
 #include <iostream>
 #include <cstring>
 
-int add(int x, int y){
+auto add(int x, int y){
 
     return(x+y);
 }
 
-char *cat_str(const char *c1, const char *c2){
+auto *cat_str(const char *c1, const char *c2){
     char *ptr = NULL;
 
     ptr = (char *) malloc(strlen(c1)+strlen(c2)+1);
@@ -21,7 +21,7 @@ int main()
     char *ptr=NULL;
     auto s=123;
     ptr = cat_str("Hello", "World");
-    std::cout << "2 + 3 = " << add(2, s) << "\n";
+    std::cout << "2 + 123= " << add(2, s) << "\n";
     std::cout << ptr << s << "\n";
     free(ptr);
     
