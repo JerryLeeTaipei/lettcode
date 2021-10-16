@@ -19,9 +19,13 @@ auto *cat_str(const char *c1, const char *c2){
 int main()
 {
     char *ptr=NULL;
-    auto s=123;
+    int nums[5] = {1,2,3,4,5};
+    auto s=100;
     ptr = cat_str("Hello", "World");
-    std::cout << "2 + 123= " << add(2, s) << "\n";
+    for ( int n: nums ){
+        s = add(s, n);
+        std::cout << s << ' ';
+    }
     std::cout << ptr << s << "\n";
     free(ptr);
     
