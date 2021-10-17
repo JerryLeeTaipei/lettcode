@@ -1,94 +1,54 @@
 #include <iostream>
-#include <cstring>
-class Bicycle
+
+class Point
 {
-    public:
-        Bicycle(int initialSpeed);
-        ~Bicycle();
-        int getSpeed();
-        void setSpeed(int speed);
-        void pedal();
-        void brake();
-        
-    private:
-        int speed;
+    // use default constructor
+public:
+    void setX(int newX) { x = newX; }
+    void setY(int newY) { y = newY; }
+    int getX() const { return x; }
+    int getY() const { return y; }
+private:
+    int x;
+    int y;
 };
 
-// constructor for the object
-Bicycle::Bicycle(int initialSpeed)
+class Line 
 {
-    setSpeed(initialSpeed);
+public:
+    Line(Point start, Point end);
+    ~Line();
+    void printLine() const;
+private:
+    Point start;
+    Point end;
+};
+
+Line::Line(Point p1, Point p2){
+    start.setX( p1.getX());
+    start.setY( p1.getY());
+    end.setX( p2.getX());
+    end.setY( p2.getY());
 }
 
-// destructor for the object
-Bicycle::~Bicycle()
-    {
-    // do nothing
-    }
-    
-// get the trike's speed
-int Bicycle::getSpeed()
-{
-    return speed;
+Line::~Line(){
+
 }
 
-// set the trike's speed
-void Bicycle::setSpeed(int newSpeed)
-{
-    if (newSpeed >= 0)
-    {
-        speed = newSpeed;
-    }
-}
-
-// pedal the trike
-void Bicycle::pedal()
-{
-    setSpeed(speed + 1);
-    std::cout << "\nPedaling; bicycle speed " << getSpeed() << " mph\n";
-}
-
-// apply the brake on the trike
-void Bicycle::brake()
-{
-    setSpeed(speed - 1);
-    std::cout << "\nBraking; bicycle speed " << getSpeed() << " mph\n";
-}
-
-auto add(int x, int y){
-
-    return(x+y);
-}
-
-auto *cat_str(const char *c1, const char *c2){
-    char *ptr = NULL;
-
-    ptr = (char *) malloc(strlen(c1)+strlen(c2)+1);
-    strncpy(ptr, c1, strlen(c1) );
-    strncpy(ptr+ strlen(c2), c2, strlen(c2) );
-    ptr[strlen(c1)+strlen(c2)] = 0;
-    return ptr;
+void Line::printLine() const{
+    std::cout << start.getX() << start.getY() << end.getX() << end.getY() << "\n";
 }
 
 int main()
 {
-    char *ptr=NULL;
-    int nums[5] = {1,2,3,4,5};
-    auto s=100;
-    ptr = cat_str("Hello", "World");
-    for ( int n: nums ){
-        s = add(s, n);
-        std::cout << s << ' ';
-    }
-    std::cout << ptr << s << "\n";
-    free(ptr);
-    
-    Bicycle bike(5);
+    Point p1, p2;
 
-    bike.pedal();
-    bike.pedal();
-    bike.brake();
-    bike.brake();
-    bike.brake();
+    p1.setX(1);
+    p1.setY(2);
+    p2.setX(3);
+    p2.setY(4);
+    Line l(p1, p2);
+    l.printLine();
+
     return 0;
 }
