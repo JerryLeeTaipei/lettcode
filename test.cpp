@@ -1,5 +1,59 @@
 #include <iostream>
 #include <cstring>
+class Bicycle
+{
+    public:
+        Bicycle(int initialSpeed);
+        ~Bicycle();
+        int getSpeed();
+        void setSpeed(int speed);
+        void pedal();
+        void brake();
+        
+    private:
+        int speed;
+};
+
+// constructor for the object
+Bicycle::Bicycle(int initialSpeed)
+{
+    setSpeed(initialSpeed);
+}
+
+// destructor for the object
+Bicycle::~Bicycle()
+    {
+    // do nothing
+    }
+    
+// get the trike's speed
+int Bicycle::getSpeed()
+{
+    return speed;
+}
+
+// set the trike's speed
+void Bicycle::setSpeed(int newSpeed)
+{
+    if (newSpeed >= 0)
+    {
+        speed = newSpeed;
+    }
+}
+
+// pedal the trike
+void Bicycle::pedal()
+{
+    setSpeed(speed + 1);
+    std::cout << "\nPedaling; bicycle speed " << getSpeed() << " mph\n";
+}
+
+// apply the brake on the trike
+void Bicycle::brake()
+{
+    setSpeed(speed - 1);
+    std::cout << "\nBraking; bicycle speed " << getSpeed() << " mph\n";
+}
 
 auto add(int x, int y){
 
@@ -29,5 +83,12 @@ int main()
     std::cout << ptr << s << "\n";
     free(ptr);
     
+    Bicycle bike(5);
+
+    bike.pedal();
+    bike.pedal();
+    bike.brake();
+    bike.brake();
+    bike.brake();
     return 0;
 }
