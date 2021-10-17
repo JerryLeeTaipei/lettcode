@@ -50,5 +50,6 @@ int main()
     Line l(p1, p2);
     l.printLine();
 
+    Line *pl = new Line(p1, p2);
     return 0;
 }
