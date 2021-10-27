@@ -1,56 +1,64 @@
+
 #include <iostream>
 
-class Point
-{
-    // use default constructor
-public:
-    void setX(int newX) { x = newX; }
-    void setY(int newY) { y = newY; }
-    int getX() const { return x; }
-    int getY() const { return y; }
-private:
-    int x;
-    int y;
-};
-
-class Line 
+/*** class ***/
+class Man
 {
 public:
-    Line(Point start, Point end);
-    ~Line();
-    void printLine() const;
-private:
-    Point start;
-    Point end;
+    int age;
+    Man();           // constructor
+    Man(Man &p); // copy constructor
+    ~Man();          // destructor
 };
 
-Line::Line(Point p1, Point p2){
-    start.setX( p1.getX());
-    start.setY( p1.getY());
-    end.setX( p2.getX());
-    end.setY( p2.getY());
+Man::Man()
+{
+    this->age = 50;
+    std::cout << "  Man's Constructor()..." << this << "\n";
 }
 
-Line::~Line(){
-
+Man::Man(Man &p)
+{
+    this->age = 60;
+    std::cout << "  Man's Copy Constructor() ..." << this << "\n";
 }
 
-void Line::printLine() const{
-    std::cout << start.getX() << start.getY() << end.getX() << end.getY() << "\n";
+Man::~Man()
+{
+    this->age = 0;
+    std::cout << "  Man's Destructor() ..." << this << "\n";
+}
+
+/*** functions ***/
+// passes by value
+Man func_val(Man p)
+{
+    std::cout << "  func_val() returns an object copied from" << &p << ",age=" << p.age << "\n";
+    return p;
+}
+
+// functionTwo, passes by reference
+Man *func_ref(Man *p)
+{
+    std::cout << "  func_ref() returns a pointer " << p << ",age=" << p->age << "\n";
+    return p;
 }
 
 int main()
 {
-    Point p1, p2;
-
-    p1.setX(1);
-    p1.setY(2);
-    p2.setX(3);
-    p2.setY(4);
-    Line l(p1, p2);
-    l.printLine();
-
-    Line &rL = l;
-    rL.printLine();
+    std::cout << "Making a jerry ..." << std::endl;
+    Man jerry;
+    std::cout << "jerry's age=" << jerry.age << "\n"; 
+    std::cout << "Making a person ..." << std::endl;
+    Man person;
+    std::cout << "person's age=" << person.age << "\n"; 
+    Man *man_ptr=nullptr;
+    std::cout << "Calling func_val(jerry) ..." << std::endl;
+    person = func_val(jerry);
+    std::cout << "person's age=" << person.age << "\n"; 
+    std::cout << "Calling func_ref(&jerry) ..." << std::endl;
+    man_ptr = func_ref(&jerry);
+    std::cout << "man_ptr's age=" << man_ptr->age << "\n"; 
+    std::cout << "End\n";
     return 0;
 }
