@@ -1,22 +1,50 @@
 #include <iostream>
-#include <queue> // Using an STL queue
+//Example code of a deque.
+
+#include <iostream>
+#include <deque>
+#include <string>
 
 using namespace std;
 
 int main() {
-          queue<int> newQueue;
+    deque<string> d;
+    cout << "Deque Empty? " << d.empty() << endl;
+    d.push_back("Zebra");
+    cout << "Deque Empty? " << d.empty() << endl;
 
-          newQueue.push(3);
-          newQueue.push(8);
-          newQueue.push(15);
+    d.push_front("Turtle"); //pushes to the front of the deque.
+    d.push_front("Panda");
+    d.push_back("Catfish"); //pushes to the back of the deque.
+    d.push_back("Giraffe");
 
-          cout << "Queue Empty? " << newQueue.empty() << endl;
-          cout << "Queue Size: " << newQueue.size() << endl;
-          cout << "Top Element of the Queue: " << newQueue.front() << endl;
-          newQueue.pop();
-          cout << "Top Element of the Queue: " << newQueue.front() << endl;
+    cout << "Deque Size: " << d.size() << endl;
+    cout << "Item at the front: " << d.front() << endl;
+    cout << "Item at the back: " << d.back() << endl;
 
-          return 0;
+    cout << endl << "Items in the Deque: " << endl;
+    int dsize = d.size();
+    for(int i = 0; i < dsize; i++){
+        //prints each item in the deque.
+        cout << d.at(i) << " ";
+    }
+
+    cout << endl;
+
+    d.pop_back();
+    d.pop_front();
+
+    cout << endl << "Item at the front: " << d.front() << endl;
+    cout << "Itm at the back: " << d.back() << endl;
+    cout << "Deque Size: " << d.size() << endl;
+
+    int dsize2 = d.size();
+    cout << endl <<  dsize2 << " Items in the Deque: " << endl;
+
+    for(int i = 0; i < dsize2; i++)
+        //prints each item in the deque.
+        cout << i << ":" << d.at(i) << "\n";
+
+    return 0;
 }
-
 
