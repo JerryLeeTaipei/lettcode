@@ -1,50 +1,50 @@
-#include <iostream>
-//Example code of a deque.
+//Example of summing up a vector without using recursion.
 
 #include <iostream>
-#include <deque>
-#include <string>
+#include <vector>
 
 using namespace std;
 
-int main() {
-    deque<string> d;
-    cout << "Deque Empty? " << d.empty() << endl;
-    d.push_back("Zebra");
-    cout << "Deque Empty? " << d.empty() << endl;
-
-    d.push_front("Turtle"); //pushes to the front of the deque.
-    d.push_front("Panda");
-    d.push_back("Catfish"); //pushes to the back of the deque.
-    d.push_back("Giraffe");
-
-    cout << "Deque Size: " << d.size() << endl;
-    cout << "Item at the front: " << d.front() << endl;
-    cout << "Item at the back: " << d.back() << endl;
-
-    cout << endl << "Items in the Deque: " << endl;
-    int dsize = d.size();
-    for(int i = 0; i < dsize; i++){
-        //prints each item in the deque.
-        cout << d.at(i) << " ";
+int iterate_sum(int nums[]){
+    int theSum = 0;
+    for (int i = 0; i < 5; i++){
+        theSum += nums[i];
     }
+    return theSum;
+}
 
-    cout << endl;
 
-    d.pop_back();
-    d.pop_front();
+int dynamic_sum(vector<int> numVect){
+    if (numVect.size() <= 1){
+        return numVect[0];
+    }
+    else {
+        vector<int> slice(numVect.begin() + 1, numVect.begin()+numVect.size());
+        return numVect[0] + dynamic_sum(slice); //function makes a recursive call to itself.
+    }
+}
 
-    cout << endl << "Item at the front: " << d.front() << endl;
-    cout << "Itm at the back: " << d.back() << endl;
-    cout << "Deque Size: " << d.size() << endl;
+int dynamic_sum(int nums[], int len){
+    if (len <= 1){
+        return nums[0];
+    }
+    else {
+        len--;
+        return nums[0] + dynamic_sum(nums + 1, len); //function makes a recursive call to itself.
+    }
+}
 
-    int dsize2 = d.size();
-    cout << endl <<  dsize2 << " Items in the Deque: " << endl;
+int main() {
+    int nums[5] = {1, 3, 5, 7, 9};
+    int len = (sizeof(nums) / sizeof(nums[0]));
 
-    for(int i = 0; i < dsize2; i++)
-        //prints each item in the deque.
-        cout << i << ":" << d.at(i) << "\n";
+    cout << "array's len: " << len << endl;
+    cout << "iterated sum(array): " << iterate_sum(nums) << endl;
 
+    vector<int> numVect(nums, nums + len);  //Initializes vector with same items as nums.
+    cout << "dynamic sum(vector): " << dynamic_sum(numVect) << endl;
+
+    cout << "dynamic sum(array): " << dynamic_sum(nums, len) << endl;
     return 0;
 }
 

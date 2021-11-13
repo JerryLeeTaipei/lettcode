@@ -1,2 +1,2 @@
 all:
-	g++ test.cpp -o test
+	g++  -ggdb -fsanitize=address -fno-omit-frame-pointer -static-libstdc++ -static-libasan -lrt test.cpp -o test
