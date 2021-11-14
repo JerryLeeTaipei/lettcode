@@ -1,50 +1,54 @@
-//Example of summing up a vector without using recursion.
-
+// constructing maps
 #include <iostream>
-#include <vector>
+#include <map>
 
 using namespace std;
 
-int iterate_sum(int nums[]){
-    int theSum = 0;
-    for (int i = 0; i < 5; i++){
-        theSum += nums[i];
-    }
-    return theSum;
+bool fncomp (char lhs, char rhs) {return lhs<rhs;}
+
+struct classcomp {
+  bool operator() (const char& lhs, const char& rhs) const
+  {return lhs<rhs;}
+};
+
+int main ()
+{
+  // declare container and iterator
+  map<char,int> map1;
+  map<char,int>::iterator iter;
+  map<char,int>::reverse_iterator iter_r;
+  // insert element
+  map1.insert(pair<char,int>('a', 10));
+  map1['b']=30;
+  map1['c']=50;
+  map1['d']=70;
+
+  //traversal
+  for(iter = map1.begin(); iter != map1.end(); iter++)
+                cout << iter->first << ":" << iter->second << " ";
+  cout << endl;
+  for(iter_r = map1.rbegin(); iter_r != map1.rend(); iter_r++)
+                cout << iter_r->first << ":" << iter_r->second << " ";
+  cout << endl;
+  //find and erase the element
+  iter = map1.find('b');
+  if ( iter != map1.end() ){
+       cout << "Find, the value is "<< iter->second << ". Delete it." << endl;
+       // erase the element
+       map1.erase(iter);
+  } else
+       cout << "Do not Find" << endl;
+
+  map<char,int> map2 (map1.begin(),map1.end());
+  for(iter = map1.begin(); iter != map1.end(); iter++)
+                cout << iter->first << ":" << iter->second << " ";
+  cout << endl;
+
+  map<char,int> map3 (map2);
+  map<char,int,classcomp> map4; // class as Compare
+
+  bool(*fn_pt)(char,char) = fncomp;
+  map<char,int,bool(*)(char,char)> fifth (fn_pt); // function pointer as Compare
+
+  return 0;
 }
-
-
-int dynamic_sum(vector<int> numVect){
-    if (numVect.size() <= 1){
-        return numVect[0];
-    }
-    else {
-        vector<int> slice(numVect.begin() + 1, numVect.begin()+numVect.size());
-        return numVect[0] + dynamic_sum(slice); //function makes a recursive call to itself.
-    }
-}
-
-int dynamic_sum(int nums[], int len){
-    if (len <= 1){
-        return nums[0];
-    }
-    else {
-        len--;
-        return nums[0] + dynamic_sum(nums + 1, len); //function makes a recursive call to itself.
-    }
-}
-
-int main() {
-    int nums[5] = {1, 3, 5, 7, 9};
-    int len = (sizeof(nums) / sizeof(nums[0]));
-
-    cout << "array's len: " << len << endl;
-    cout << "iterated sum(array): " << iterate_sum(nums) << endl;
-
-    vector<int> numVect(nums, nums + len);  //Initializes vector with same items as nums.
-    cout << "dynamic sum(vector): " << dynamic_sum(numVect) << endl;
-
-    cout << "dynamic sum(array): " << dynamic_sum(nums, len) << endl;
-    return 0;
-}
-
