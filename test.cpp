@@ -1,114 +1,37 @@
 #include <iostream>
-#include <string>
+#include <vector>
 using namespace std;
 
-class HashTable{
-    public:
-    static const int size=11; // initial size of hash table is prime to help with collision resolution
-    int slots[size]; // list to hold key items
-    string data[size]; // list to hold data values
-
-    int hashfunction(int key) { // implements remainder method
-        return key%size;
-    }
-
-      // Computes original hashvalue, and if slot is
-      // not empty iterates until empty slot is found
-    int rehash(int oldhash) {
-        return (oldhash+1)%size;
-    }
-
-    // Function that assumes there will eventually be
-    // an empty slot unless the key is alread present in the slot
-    void put(int key, string val){
-        int hashvalue = hashfunction(key);
-        int count = 0;
-
-        if (data[hashvalue]=="") {
-            slots[hashvalue] = key;
-            data[hashvalue] = val;
-        } else {
-            if (slots[hashvalue] == key) {
-                data[hashvalue] = val;
-            } else {
-                int nextslot = rehash(hashvalue);
-
-                while (data[nextslot]!="" && slots[nextslot] != key) {
-                    nextslot = rehash(nextslot);
-
-                    count++;
-                    if (count>size) {
-                        cout<<"TABLE FULL"<<endl;
-                        return;
-                    }
-                }
-                if (data[nextslot]=="") {
-                    slots[nextslot]=key;
-                    data[nextslot]=val;
-                } else {
-                    data[nextslot] = val;
-                }
-            }
-        }
-    }
-
-    // computes the initial hash value
-    // if value is not in the initial slot, uses
-    // rehash to locate the next position
-    string get(int key) {
-        int startslot = hashfunction(key);
-
-        string val;
-        bool stop=false;
-        bool found=false;
-        int position = startslot;
-        while(data[position]!="" && !found && !stop) {
-            if (slots[position]==key) {
-                found = true;
-                val = data[position];
-            } else {
-                position=rehash(position);
-                if (position==startslot) {
-                    stop=true;
-                }
-            }
-
-        }
-        return val;
-    }
-
-    friend ostream& operator<<(ostream& stream, HashTable& hash);
-};
-
-
-
-ostream& operator<<(ostream& stream, HashTable& hash) {
-    for (int i=0; i<hash.size; i++) {
-        stream<<hash.slots[i]<<": "<<hash.data[i]<<endl;
-    }
-
-    return stream;
+//function goes through list sorting adjacent values as it bubbles
+//the largest value to the top.
+vector<int> bubbleSort(vector<int> avector) { //the vector for bubble sort
+  for (int passnum = avector.size()-1; passnum > 0; passnum -= 1) {
+      for (int i = 0; i < passnum; i++) {
+          if (avector[i] > avector[i+1]) {
+              int temp = avector[i];
+              avector[i] = avector[i+1];
+              avector[i+1] = temp;
+          }
+      }
+  }
+  return avector;
 }
 
 int main() {
-    HashTable h;
+    // Vector initialized using a static array
+    static const int arr[] = {54,26,93,17,77,31,44,55,20};
+    vector<int> avector (arr, arr + sizeof(arr) / sizeof(arr[0]) );
 
-    h.put(54, "cat");
-    h.put(26, "dog");
-    h.put(93, "lion");
-    h.put(17, "tiger");
-    h.put(77, "bird");
-    h.put(31, "cow");
-    h.put(44, "goat");
-    h.put(55, "pig");
-    h.put(20, "chicken");
-    cout<<h<<endl;
+    vector<int> bvector = bubbleSort(avector);
 
-    h.put(20,"chicken");
-    h.put(17,"tiger");
-    h.put(20,"duck");
-    cout<<h.get(20)<<endl;
-    cout<<h.get(99)<<endl;
-
+    for (unsigned int i = 0; i < avector.size(); i++) {
+        cout << avector[i] << " ";
+    }
+    cout << endl;
+    for (unsigned int i = 0; i < bvector.size(); i++) {
+        cout << bvector[i] << " ";
+    }
+    cout << endl;
     return 0;
 }
+
