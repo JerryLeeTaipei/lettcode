@@ -1,54 +1,114 @@
-// constructing maps
 #include <iostream>
-#include <map>
-
+#include <string>
 using namespace std;
 
-bool fncomp (char lhs, char rhs) {return lhs<rhs;}
+class HashTable{
+    public:
+    static const int size=11; // initial size of hash table is prime to help with collision resolution
+    int slots[size]; // list to hold key items
+    string data[size]; // list to hold data values
 
-struct classcomp {
-  bool operator() (const char& lhs, const char& rhs) const
-  {return lhs<rhs;}
+    int hashfunction(int key) { // implements remainder method
+        return key%size;
+    }
+
+      // Computes original hashvalue, and if slot is
+      // not empty iterates until empty slot is found
+    int rehash(int oldhash) {
+        return (oldhash+1)%size;
+    }
+
+    // Function that assumes there will eventually be
+    // an empty slot unless the key is alread present in the slot
+    void put(int key, string val){
+        int hashvalue = hashfunction(key);
+        int count = 0;
+
+        if (data[hashvalue]=="") {
+            slots[hashvalue] = key;
+            data[hashvalue] = val;
+        } else {
+            if (slots[hashvalue] == key) {
+                data[hashvalue] = val;
+            } else {
+                int nextslot = rehash(hashvalue);
+
+                while (data[nextslot]!="" && slots[nextslot] != key) {
+                    nextslot = rehash(nextslot);
+
+                    count++;
+                    if (count>size) {
+                        cout<<"TABLE FULL"<<endl;
+                        return;
+                    }
+                }
+                if (data[nextslot]=="") {
+                    slots[nextslot]=key;
+                    data[nextslot]=val;
+                } else {
+                    data[nextslot] = val;
+                }
+            }
+        }
+    }
+
+    // computes the initial hash value
+    // if value is not in the initial slot, uses
+    // rehash to locate the next position
+    string get(int key) {
+        int startslot = hashfunction(key);
+
+        string val;
+        bool stop=false;
+        bool found=false;
+        int position = startslot;
+        while(data[position]!="" && !found && !stop) {
+            if (slots[position]==key) {
+                found = true;
+                val = data[position];
+            } else {
+                position=rehash(position);
+                if (position==startslot) {
+                    stop=true;
+                }
+            }
+
+        }
+        return val;
+    }
+
+    friend ostream& operator<<(ostream& stream, HashTable& hash);
 };
 
-int main ()
-{
-  // declare container and iterator
-  map<char,int> map1;
-  map<char,int>::iterator iter;
-  map<char,int>::reverse_iterator iter_r;
-  // insert element
-  map1.insert(pair<char,int>('a', 10));
-  map1['b']=30;
-  map1['c']=50;
-  map1['d']=70;
 
-  //traversal
-  for(iter = map1.begin(); iter != map1.end(); iter++)
-                cout << iter->first << ":" << iter->second << " ";
-  cout << endl;
-  for(iter_r = map1.rbegin(); iter_r != map1.rend(); iter_r++)
-                cout << iter_r->first << ":" << iter_r->second << " ";
-  cout << endl;
-  //find and erase the element
-  iter = map1.find('b');
-  if ( iter != map1.end() ){
-       cout << "Find, the value is "<< iter->second << ". Delete it." << endl;
-       // erase the element
-       map1.erase(iter);
-  } else
-       cout << "Do not Find" << endl;
 
-  map<char,int> map2 (map1.begin(),map1.end());
-  for(iter = map1.begin(); iter != map1.end(); iter++)
-                cout << iter->first << ":" << iter->second << " ";
-  cout << endl;
+ostream& operator<<(ostream& stream, HashTable& hash) {
+    for (int i=0; i<hash.size; i++) {
+        stream<<hash.slots[i]<<": "<<hash.data[i]<<endl;
+    }
 
-  map<char,int> map3 (map2);
-  map<char,int,classcomp> map4; // class as Compare
+    return stream;
+}
 
-  bool(*fn_pt)(char,char) = fncomp;
-  map<char,int,bool(*)(char,char)> fifth (fn_pt); // function pointer as Compare
+int main() {
+    HashTable h;
 
-  return 0;
+    h.put(54, "cat");
+    h.put(26, "dog");
+    h.put(93, "lion");
+    h.put(17, "tiger");
+    h.put(77, "bird");
+    h.put(31, "cow");
+    h.put(44, "goat");
+    h.put(55, "pig");
+    h.put(20, "chicken");
+    cout<<h<<endl;
+
+    h.put(20,"chicken");
+    h.put(17,"tiger");
+    h.put(20,"duck");
+    cout<<h.get(20)<<endl;
+    cout<<h.get(99)<<endl;
+
+    return 0;
 }
