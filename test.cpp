@@ -2,35 +2,64 @@
 #include <vector>
 using namespace std;
 
-//function goes through list sorting adjacent values as it bubbles
-//the largest value to the top.
-void bubbleSort(vector<int> &avector) { //the vector for bubble sort
-  for (int passnum = avector.size()-1; passnum > 0; passnum -= 1) {
-      for (int i = 0; i < passnum; i++) {
-          if (avector[i] > avector[i+1]) {
-              int temp = avector[i];
-              avector[i] = avector[i+1];
-              avector[i+1] = temp;
-          }
-      }
+void printl(vector<int> avector) {
+  for (unsigned i=0; i<avector.size(); i++) {
+    cout<<avector[i]<<" ";
   }
-  return ;
+  cout<<endl;
+}
+
+//function partitions vector depending on pivot value
+int partition(vector<int> &avector, int first, int last) {
+  int pivotvalue = avector[first];
+
+  int rightmark = last;
+  int leftmark = first+1;
+
+  bool done = false;
+
+  while(! done){
+    while(leftmark<=rightmark && avector[leftmark]<=pivotvalue){
+      leftmark++;
+    }
+    while(rightmark>=leftmark && avector[rightmark]>=pivotvalue){
+      rightmark--;
+    }
+    if(rightmark<leftmark){
+      done = true;
+    }
+    else{
+      swap(avector[rightmark], avector[leftmark]);
+    }
+  }
+
+  swap(avector[rightmark], avector[first]);
+
+  return rightmark;
+}
+
+//recursive function that quicksorts through a given vector
+void quickSort(vector<int> &avector, int first, int last) {
+  int splitpoint;
+
+  if (first<last) {
+    splitpoint = partition(avector,first,last);
+
+    quickSort(avector,first,splitpoint);
+    quickSort(avector,splitpoint+1,last);
+
+  }
 }
 
 int main() {
-    // Vector initialized using a static array
-    static const int arr[] = {54,26,93,17,77,31,44,55,20};
-    vector<int> avector (arr, arr + sizeof(arr) / sizeof(arr[0]) );
-    for (unsigned int i = 0; i < avector.size(); i++) {
-        cout << avector[i] << " ";
-    }
-    cout << endl;
-    bubbleSort(avector);
+  // Vector initialized using a static array
+  static const int arr[] = {54, 26, 93, 17, 77, 31, 44, 55, 20};
+  vector<int> avector (arr, arr + sizeof(arr) / sizeof(arr[0]) );
 
-    for (unsigned int i = 0; i < avector.size(); i++) {
-        cout << avector[i] << " ";
-    }
-    cout << endl;
+  quickSort(avector,0,avector.size()-1);
 
-    return 0;
+  printl(avector);
+
+  return 0;
 }
+
