@@ -2,64 +2,121 @@
 #include <vector>
 using namespace std;
 
-void printl(vector<int> avector) {
-  for (unsigned i=0; i<avector.size(); i++) {
-    cout<<avector[i]<<" ";
-  }
-  cout<<endl;
-}
+class BinHeap{
 
-//function partitions vector depending on pivot value
-int partition(vector<int> &avector, int first, int last) {
-  int pivotvalue = avector[first];
+private:
+    vector<int> heapvector;
+    int currentSize;
 
-  int rightmark = last;
-  int leftmark = first+1;
-
-  bool done = false;
-
-  while(! done){
-    while(leftmark<=rightmark && avector[leftmark]<=pivotvalue){
-      leftmark++;
+public:
+    BinHeap(vector<int> heapvector){
+        this->heapvector = heapvector;
+        this->currentSize = 0;
     }
-    while(rightmark>=leftmark && avector[rightmark]>=pivotvalue){
-      rightmark--;
+
+    void print(){
+        int i=0;
+        for ( i=0 ; i < heapvector.size(); i++ )
+            cout << heapvector[i] << " ";
+        cout << endl;
     }
-    if(rightmark<leftmark){
-      done = true;
+    void upHeap(int i){
+        while ((i / 2) > 0){
+            if (this->heapvector[i] < this->heapvector[i/2]){ // compare with its parent
+                int tmp = this->heapvector[i/2];
+                this->heapvector[i/2] = this->heapvector[i];
+                this->heapvector[i] = tmp;
+                i = i/2;
+            } else
+                break;
+        }
     }
-    else{
-      swap(avector[rightmark], avector[leftmark]);
+
+    void insert(int k){
+        this->heapvector.push_back(k);
+        this->currentSize = this->currentSize + 1;
+        this->upHeap(this->currentSize);
     }
-  }
 
-  swap(avector[rightmark], avector[first]);
+    void downHeap(int i){
+        while ((i*2) <= this->currentSize){
+            int mc = this->minChild(i);
+            if (this->heapvector[i] > this->heapvector[mc]){
+                int tmp = this->heapvector[i];
+                this->heapvector[i] = this->heapvector[mc];
+                this->heapvector[mc] = tmp;
+            }
+            i = mc;
+        }
+    }
 
-  return rightmark;
-}
+    int minChild(int i){
+        if (((i*2)+1) > this->currentSize){
+            return i * 2;
+        }
+        else{
+            if (this->heapvector[i*2] < this->heapvector[(i*2)+1]){
+                return i * 2;
+            }
+            else{
+                return (i * 2) + 1;
+            }
+        }
+    }
 
-//recursive function that quicksorts through a given vector
-void quickSort(vector<int> &avector, int first, int last) {
-  int splitpoint;
+    int delMin(){
+        int retval = this->heapvector[1];
+        this->heapvector[1] = this->heapvector[this->currentSize];
+        this->currentSize = this->currentSize - 1;
+        this->heapvector.pop_back();
+        this->downHeap(1);
+        return retval;
+    }
 
-  if (first<last) {
-    splitpoint = partition(avector,first,last);
+    void buildheap(vector<int> avector){
+        int i = avector.size() / 2;
+        this->currentSize = avector.size();
+        this->heapvector.insert(this->heapvector.end(), avector.begin(), avector.end());
+        while (i > 0){
+            this->downHeap(i);
+            i = i - 1;
+        }
+    }
 
-    quickSort(avector,first,splitpoint);
-    quickSort(avector,splitpoint+1,last);
+    bool isEmpty(){
+        if (this->heapvector.size()>0){
+            return false;
+        }
+        return true;
+    }
 
-  }
-}
+    int findMin(){
+        return this->heapvector[1];
+    }
+};
 
-int main() {
-  // Vector initialized using a static array
-  static const int arr[] = {54, 26, 93, 17, 77, 31, 44, 55, 20};
-  vector<int> avector (arr, arr + sizeof(arr) / sizeof(arr[0]) );
 
-  quickSort(avector,0,avector.size()-1);
+int main(){
+    vector<int> vec;
+    vec.push_back(0);
 
-  printl(avector);
+    BinHeap *bh = new BinHeap(vec);
+    cout << "Begin: ";
+    bh->print();
 
-  return 0;
+    bh->insert(5);
+    bh->insert(7);
+    bh->insert(3);
+    bh->insert(11);
+    cout << "After insertting...\n";
+    bh->print();
+
+    cout << bh->delMin() << " is deleted\n";
+    cout << bh->delMin() << " is deleted\n";
+    cout << bh->delMin() << " is deleted\n";
+    cout << bh->delMin() << " is deleted\n";
+    cout << "AFter deleting...\n";
+    bh->print();
+    return 0;
 }
 
