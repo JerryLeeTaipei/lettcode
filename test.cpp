@@ -1,155 +1,195 @@
+#include <fstream>
 #include <iostream>
 #include <map>
+#include <string>
 #include <vector>
 using namespace std;
 
 class Vertex {
 public:
-  int id;
-  map<int, int> connectedTo;
+      string id;
+      map<string, float> connectedTo;
 
-  //Empty constructor.
-  Vertex() {
-  }
+      Vertex() {
+      }
 
-  //Constructor that defines the key of the vertex.
-  Vertex(int key) {
-          id = key;
-  }
+      Vertex(string key) {
+              id = key;
+      }
 
-  //Adds a neighbor to this vertex with the specified ID and weight.
-  void addNeighbor(int nbr, int weight = 0) {
-          connectedTo[nbr] = weight;
-  }
-  //Returns a vector (e.g, list) of vertices connected to this one.
-  vector<int> getConnections() {
-          vector<int> neighbors;
-          // Use of iterator to find all keys
-          for (map<int, int>::iterator it = connectedTo.begin();
-                   it != connectedTo.end();
-                   ++it) {
-                  neighbors.push_back(it->first);
-          }
-          return neighbors;
-  }
+      void addNeighbor(string nbr, float weight = 1) {
+              connectedTo[nbr] = weight;
+      }
 
-  //Returns the ID of this vertex.
-  int getId() {
-          return id;
-  }
+      vector<string> getConnections() {
+              vector<string> keys;
+              // Use of iterator to find all keys
+              for (map<string, float>::iterator it = connectedTo.begin();
+                       it != connectedTo.end();
+                       ++it) {
+                      keys.push_back(it->first);
+              }
+              return keys;
+      }
 
-          //Returns the weight of the connection between this vertex and the specified neighbor.
-  int getWeight(int nbr) {
-          return connectedTo[nbr];
-  }
+      string getId() {
+              return id;
+      }
 
-  //Output stream overload operator for printing to the screen.
-  friend ostream &operator<<(ostream &, Vertex &);
+      float getWeight(string nbr) {
+              return connectedTo[nbr];
+      }
+
+      friend ostream &operator<<(ostream &, Vertex &);
 };
 
-ostream &operator<<(ostream &os, Vertex &vert) {
-  vector<int> connects = vert.getConnections();
-  os << "( " << vert.id << " : ";
-  for (unsigned int i = 0; i < connects.size(); i++) {
-          os <<  connects[i] << " ";
-  }
-  os  << ") \n";
-  return os;
+ostream &operator<<(ostream &stream, Vertex &vert) {
+      vector<string> connects = vert.getConnections();
+      stream << vert.id << " -> ";
+      for (unsigned int i = 0; i < connects.size(); i++) {
+              //stream << connects[i] << endl << "\t";
+              stream << connects[i] << "\t";
+      }
+      return stream;
 }
 
 class Graph {
 public:
-  map<int, Vertex> vertList;
-  int numVertices;
+      map<string, Vertex> vertList;
+      int numVertices;
+      bool directional;
 
-  //Empty constructor.
-  Graph() {
-          numVertices = 0;
-  }
+      Graph(bool directed = true) {
+              directional = directed;
+              numVertices = 0;
+      }
 
-  //Adds the specified vertex and returns a copy of it.
-  Vertex addVertex(int key) {
-          numVertices++;
-          Vertex newVertex = Vertex(key);
-          this->vertList[key] = newVertex;
-          return newVertex;
-  }
+      Vertex addVertex(string key) {
+              numVertices++;
+              Vertex newVertex = Vertex(key);
+              this->vertList[key] = newVertex;
+              return newVertex;
+      }
 
-  //Returns the vertex with the specified ID.
-  //Will return NULl if the vertex doesn't exist.
-  Vertex *getVertex(int n) {
-        std::map<int, Vertex>::iterator it;
-        it = vertList.find(n);
-        if ( it != vertList.end()){
-                // Forced to use pntr due to possibility of returning NULL
-                Vertex *vpntr = &vertList[n];
-                return vpntr;
-        }
-        return NULL;
-  }
-  //Returns a boolean indicating if an index with the specified ID exists.
-  bool contains(int n) {
-        std::map<int, Vertex>::iterator it;
-        it = vertList.find(n);
-        if ( it != vertList.end())
-            return true;
-        return false;
-  }
+      Vertex *getVertex(string n) {
+              for (map<string, Vertex>::iterator it = vertList.begin();
+                       it != vertList.end();
+                       ++it) {
+                      if (it->first == n) {
+                              // Forced to use pntr due to possibility of returning NULL
+                              Vertex *vpntr = &vertList[n];
+                              return vpntr;
+                      } else {
+                              return NULL;
+                      }
+              }
+      }
 
-  //Adds an edge between vertices F and T with a weight equivalent to cost.
-  void addEdge(int f, int t, int cost = 0) {
-          if (!this->contains(f)) {
-                  cout << f << " was not found, adding!" << endl;
-                  this->addVertex(f);
-          }
-          if (!this->contains(t)) {
-                  cout << t << " was not found, adding!" << endl;
-          }
-          vertList[f].addNeighbor(t, cost);
-  }
+      bool contains(string n) {
+              for (map<string, Vertex>::iterator it = vertList.begin();
+                       it != vertList.end();
+                       ++it) {
+                      if (it->first == n) {
+                              return true;
+                      }
+              }
+              return false;
+      }
 
-  //Returns a vector (e.g, list) of all vertices in this graph.
-  vector<int> getVertices() {
-          vector<int> verts;
+      void addEdge(string f, string t, float cost = 1) {
+              if (!this->contains(f)) {
+                      this->addVertex(f);
+              }
+              if (!this->contains(t)) {
+                      this->addVertex(t);
+              }
+              vertList[f].addNeighbor(t, cost);
 
-          for (map<int, Vertex>::iterator it = vertList.begin();
-                   it != vertList.end();
-                   ++it) {
-                  verts.push_back(it->first);
-          }
-          return verts;
-  }
+              if (!directional) {
+                      vertList[t].addNeighbor(f, cost);
+              }
+      }
 
-  //Overloaded Output stream operator for printing to the screen
-  friend ostream &operator<<(ostream &, Graph &);
+      vector<string> getVertices() {
+              vector<string> verts;
+
+              for (map<string, Vertex>::iterator it = vertList.begin();
+                       it != vertList.end();
+                       ++it) {
+                      verts.push_back(it->first);
+              }
+              return verts;
+      }
+
+      friend ostream &operator<<(ostream &, Graph &);
 };
 
 ostream &operator<<(ostream &stream, Graph &grph) {
-  for (unsigned int i = 0; i < grph.vertList.size(); i++) {
-          stream << grph.vertList[i];
-  }
+      cout << "= Display the graph =\n";
+      for (map<string, Vertex>::iterator it = grph.vertList.begin();
+               it != grph.vertList.end();
+               ++it) {
+              stream << it->second;
+        cout<<endl;
+      }
 
-  return stream;
+      return stream;
+}
+
+string getBlank(string str, int index) {
+      string blank = str;
+      blank[index] = '_';
+      return blank;
+}
+
+Graph buildGraph(vector<string> words) {
+      Graph g(false);
+
+      map<string, vector<string> > bucket_map_vec;
+
+      // Go through the words to create buckets
+      cout << "= Create buckets =\n";
+      for (unsigned int i = 0; i < words.size(); i++) {
+              // Go through each letter, making it blank
+                cout << words[i] << ": ";
+              for (unsigned int j = 0; j < words[i].length(); j++) {
+                      string bucket = getBlank(words[i], j);
+                        cout << "\t" << bucket;
+                      // Add the word to the map at the location of the blank
+                      bucket_map_vec[bucket].push_back(words[i]);
+              }
+            cout << endl;
+      }
+
+      // go through each bucket to add edges in the same bucket
+      cout << "= Create edges =\n";
+      for (map<string, vector<string> >::iterator iter = bucket_map_vec.begin(); iter != bucket_map_vec.end(); ++iter) {
+        if ( iter->second.size() < 2 ) // the edge between 2 vertexes
+            continue;
+        cout << iter->first << ": " ;
+        for(unsigned int i=0; i<iter->second.size();i++) {
+            for (unsigned int j=0; j<iter->second.size();j++) {
+                if (iter->second[i]!=iter->second[j]) {
+                    cout << iter->second[i] << "-" << iter->second[j] << "\t";
+                    g.addEdge(iter->second[i],iter->second[j]);
+                }
+            }
+        }
+        cout << endl;
+      }
+
+    return g;
 }
 
 int main() {
-  Graph g;
+    // Vector Initialized with an array
+    string arr[] = {"fool","cool","pool","poll","pole","pall","fall","fail","foil","foul","pope","pale","sale","sage","page"};
+    vector<string> words(arr,arr+(sizeof(arr)/sizeof(arr[0])));
 
-  for (int i = 0; i < 6; i++) {
-          g.addVertex(i);
-  }
+      Graph g = buildGraph(words);
 
-  g.addEdge(0, 1, 5);
-  g.addEdge(0, 5, 2);
-  g.addEdge(1, 2, 4);
-  g.addEdge(2, 3, 9);
-  g.addEdge(3, 4, 7);
-  g.addEdge(3, 5, 3);
-  g.addEdge(4, 0, 1);
-  g.addEdge(5, 4, 8);
-  g.addEdge(5, 2, 1);
+      cout << g << endl;
 
-  cout << g << endl;
-
-  return 0;
+      return 0;
 }
+
