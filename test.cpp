@@ -1,83 +1,155 @@
 #include <iostream>
-#include <iterator>
 #include <map>
-
+#include <vector>
 using namespace std;
 
-int main()
-{
+class Vertex {
+public:
+  int id;
+  map<int, int> connectedTo;
 
-	// empty map container
-	map<int, int> mapA;
+  //Empty constructor.
+  Vertex() {
+  }
 
-	// insert elements in random order
-	mapA.insert(pair<int, int>(1, 40));
-	mapA.insert(pair<int, int>(2, 30));
-	mapA.insert(pair<int, int>(3, 60));
-	mapA.insert(pair<int, int>(4, 20));
-	mapA.insert(pair<int, int>(5, 50));
-	mapA.insert(pair<int, int>(6, 50));
-	mapA.insert(pair<int, int>(7, 10));
+  //Constructor that defines the key of the vertex.
+  Vertex(int key) {
+          id = key;
+  }
 
-	// printing map mapA
-	map<int, int>::iterator itr;
-	cout << "\nThe map mapA is : \n";
-	cout << "\tKEY\tELEMENT\n";
-	for (itr = mapA.begin(); itr != mapA.end(); itr++) {
-		cout << '\t' << itr->first
-			<< '\t' << itr->second << '\n';
-	}
-	cout << endl;
+  //Adds a neighbor to this vertex with the specified ID and weight.
+  void addNeighbor(int nbr, int weight = 0) {
+          connectedTo[nbr] = weight;
+  }
+  //Returns a vector (e.g, list) of vertices connected to this one.
+  vector<int> getConnections() {
+          vector<int> neighbors;
+          // Use of iterator to find all keys
+          for (map<int, int>::iterator it = connectedTo.begin();
+                   it != connectedTo.end();
+                   ++it) {
+                  neighbors.push_back(it->first);
+          }
+          return neighbors;
+  }
 
-	// assigning the elements from mapA to mapB
-	map<int, int> mapB(mapA.begin(), mapA.end());
+  //Returns the ID of this vertex.
+  int getId() {
+          return id;
+  }
 
-	// print all elements of the map mapB
-	cout << "\nThe map mapB after"
-		<< " assign from mapA is : \n";
-	cout << "\tKEY\tELEMENT\n";
-	for (itr = mapB.begin(); itr != mapB.end(); ++itr) {
-		cout << '\t' << itr->first
-			<< '\t' << itr->second << '\n';
-	}
-	cout << endl;
+          //Returns the weight of the connection between this vertex and the specified neighbor.
+  int getWeight(int nbr) {
+          return connectedTo[nbr];
+  }
 
-	// remove all elements up to
-	// element with key=3 in mapB
-	cout << "\nmapB after removal of"
-			" elements from the begin to the key=3 : \n";
-	cout << "\tKEY\tELEMENT\n";
-	mapB.erase(mapB.begin(), mapB.find(3));
-	for (itr = mapB.begin(); itr != mapB.end(); ++itr) {
-		cout << '\t' << itr->first
-			<< '\t' << itr->second << '\n';
-	}
+  //Output stream overload operator for printing to the screen.
+  friend ostream &operator<<(ostream &, Vertex &);
+};
 
-	// remove all elements with key = 4
-	int num;
-	num = mapB.erase(4);
-	cout << "\nmapB.erase(4) : ";
-	cout << num << " removed \n";
-	cout << "\tKEY\tELEMENT\n";
-	for (itr = mapB.begin(); itr != mapB.end(); ++itr) {
-		cout << '\t' << itr->first
-			<< '\t' << itr->second << '\n';
-	}
-
-	cout << endl;
-
-	// lower bound and upper bound for map mapA key = 5
-	cout << "mapA.lower_bound(5) : "
-		<< "\tKEY = ";
-	cout << mapA.lower_bound(5)->first << '\t';
-	cout << "\tELEMENT = "
-		<< mapA.lower_bound(5)->second << endl;
-	cout << "mapA.upper_bound(5) : "
-		<< "\tKEY = ";
-	cout << mapA.upper_bound(5)->first << '\t';
-	cout << "\tELEMENT = "
-		<< mapA.upper_bound(5)->second << endl;
-
-	return 0;
+ostream &operator<<(ostream &os, Vertex &vert) {
+  vector<int> connects = vert.getConnections();
+  os << "( " << vert.id << " : ";
+  for (unsigned int i = 0; i < connects.size(); i++) {
+          os <<  connects[i] << " ";
+  }
+  os  << ") \n";
+  return os;
 }
 
+class Graph {
+public:
+  map<int, Vertex> vertList;
+  int numVertices;
+
+  //Empty constructor.
+  Graph() {
+          numVertices = 0;
+  }
+
+  //Adds the specified vertex and returns a copy of it.
+  Vertex addVertex(int key) {
+          numVertices++;
+          Vertex newVertex = Vertex(key);
+          this->vertList[key] = newVertex;
+          return newVertex;
+  }
+
+  //Returns the vertex with the specified ID.
+  //Will return NULl if the vertex doesn't exist.
+  Vertex *getVertex(int n) {
+        std::map<int, Vertex>::iterator it;
+        it = vertList.find(n);
+        if ( it != vertList.end()){
+                // Forced to use pntr due to possibility of returning NULL
+                Vertex *vpntr = &vertList[n];
+                return vpntr;
+        }
+        return NULL;
+  }
+  //Returns a boolean indicating if an index with the specified ID exists.
+  bool contains(int n) {
+        std::map<int, Vertex>::iterator it;
+        it = vertList.find(n);
+        if ( it != vertList.end())
+            return true;
+        return false;
+  }
+
+  //Adds an edge between vertices F and T with a weight equivalent to cost.
+  void addEdge(int f, int t, int cost = 0) {
+          if (!this->contains(f)) {
+                  cout << f << " was not found, adding!" << endl;
+                  this->addVertex(f);
+          }
+          if (!this->contains(t)) {
+                  cout << t << " was not found, adding!" << endl;
+          }
+          vertList[f].addNeighbor(t, cost);
+  }
+
+  //Returns a vector (e.g, list) of all vertices in this graph.
+  vector<int> getVertices() {
+          vector<int> verts;
+
+          for (map<int, Vertex>::iterator it = vertList.begin();
+                   it != vertList.end();
+                   ++it) {
+                  verts.push_back(it->first);
+          }
+          return verts;
+  }
+
+  //Overloaded Output stream operator for printing to the screen
+  friend ostream &operator<<(ostream &, Graph &);
+};
+
+ostream &operator<<(ostream &stream, Graph &grph) {
+  for (unsigned int i = 0; i < grph.vertList.size(); i++) {
+          stream << grph.vertList[i];
+  }
+
+  return stream;
+}
+
+int main() {
+  Graph g;
+
+  for (int i = 0; i < 6; i++) {
+          g.addVertex(i);
+  }
+
+  g.addEdge(0, 1, 5);
+  g.addEdge(0, 5, 2);
+  g.addEdge(1, 2, 4);
+  g.addEdge(2, 3, 9);
+  g.addEdge(3, 4, 7);
+  g.addEdge(3, 5, 3);
+  g.addEdge(4, 0, 1);
+  g.addEdge(5, 4, 8);
+  g.addEdge(5, 2, 1);
+
+  cout << g << endl;
+
+  return 0;
+}
